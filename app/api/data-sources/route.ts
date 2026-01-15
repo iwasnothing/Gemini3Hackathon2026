@@ -1,17 +1,13 @@
 import { NextResponse } from 'next/server';
-import { mockDataSources } from '@/lib/mockData';
+import { dataSourceService } from '@/lib/services/factory';
 
 export async function GET() {
-  return NextResponse.json(mockDataSources);
+  const sources = await dataSourceService.getAll();
+  return NextResponse.json(sources);
 }
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const newSource = {
-    id: `ds-${Date.now()}`,
-    ...body,
-    status: 'connected' as const,
-    lastSync: new Date().toISOString(),
-  };
+  const newSource = await dataSourceService.create(body);
   return NextResponse.json(newSource, { status: 201 });
 }
