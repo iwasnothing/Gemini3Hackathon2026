@@ -7,7 +7,12 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const newSource = await dataSourceService.create(body);
-  return NextResponse.json(newSource, { status: 201 });
+  try {
+    const body = await request.json();
+    const newSource = await dataSourceService.create(body);
+    return NextResponse.json(newSource, { status: 201 });
+  } catch (error) {
+    console.error('Error creating data source:', error);
+    return NextResponse.json({ error: 'Failed to create data source' }, { status: 500 });
+  }
 }

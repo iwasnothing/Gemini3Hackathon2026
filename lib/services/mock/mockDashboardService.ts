@@ -10,8 +10,8 @@ export class MockDashboardService implements IDashboardService {
   async create(data: Partial<Dashboard>): Promise<Dashboard> {
     return {
       id: `dash-${Date.now()}`,
-      ...data,
       widgets: [],
+      ...data,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     } as Dashboard;
