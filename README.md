@@ -90,6 +90,10 @@ insight-canvas/
 │   ├── Layout.tsx            # Main layout wrapper
 │   └── Sidebar.tsx           # Navigation sidebar
 ├── lib/                      # Utilities and types
+│   ├── services/             # Service layer
+│   │   ├── interfaces.ts     # Service contracts
+│   │   ├── factory.ts        # Service factory
+│   │   └── mock/             # Mock implementations
 │   ├── types.ts              # TypeScript type definitions
 │   └── mockData.ts           # Mock data for development
 └── package.json              # Dependencies
@@ -112,15 +116,31 @@ insight-canvas/
 - `POST /api/dashboards` - Create a new dashboard
 - `POST /api/dashboards/[id]/ai-chat` - Send message to AI assistant
 
-## Current Status
+## Mock vs Real Data
 
-This application is built with mock data for demonstration purposes. All API endpoints return mock data to showcase the UI and functionality. To integrate with real data sources, you would need to:
+The application uses a service layer pattern to isolate mock data from business logic:
 
-1. Replace mock data in `lib/mockData.ts` with actual database queries
-2. Implement real database connectors for each data source type
-3. Integrate with an AI/LLM service for natural language query processing
-4. Add authentication and authorization
-5. Implement real-time data synchronization
+### Using Mock Data (Default)
+Mock data is enabled by default. No configuration needed.
+
+### Switching to Real Data
+1. Create a `.env.local` file:
+```bash
+NEXT_PUBLIC_USE_MOCK=false
+```
+
+2. Implement real services in `lib/services/real/`:
+   - `RealDataSourceService.ts`
+   - `RealDataCubeService.ts`
+   - `RealDashboardService.ts`
+
+3. Update `lib/services/factory.ts` to use real implementations
+
+### Service Architecture
+- **Interfaces** (`lib/services/interfaces.ts`) - Define contracts
+- **Factory** (`lib/services/factory.ts`) - Switch between mock/real
+- **Mock Services** (`lib/services/mock/`) - Mock implementations
+- **API Routes** - Use services via factory (no direct mock dependencies)
 
 ## License
 
