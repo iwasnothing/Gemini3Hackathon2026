@@ -1,0 +1,58 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - heading "Insight Canvas" [level=1] [ref=e6]
+        - paragraph [ref=e7]: AI-Assisted BI
+      - navigation [ref=e8]:
+        - link "Home" [ref=e9] [cursor=pointer]:
+          - /url: /
+          - img [ref=e10]
+          - generic [ref=e13]: Home
+        - link "Data Sources" [ref=e14] [cursor=pointer]:
+          - /url: /data-sources
+          - img [ref=e15]
+          - generic [ref=e19]: Data Sources
+        - link "Data Cubes" [ref=e20] [cursor=pointer]:
+          - /url: /data-cubes
+          - img [ref=e21]
+          - generic [ref=e24]: Data Cubes
+        - link "Dashboards" [ref=e25] [cursor=pointer]:
+          - /url: /dashboards
+          - img [ref=e26]
+          - generic [ref=e31]: Dashboards
+    - main [ref=e32]:
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - generic [ref=e35]:
+            - heading "Dashboards" [level=1] [ref=e36]
+            - paragraph [ref=e37]: Build and manage interactive dashboards
+          - button "Create Dashboard" [active] [ref=e38] [cursor=pointer]:
+            - img [ref=e39]
+            - text: Create Dashboard
+        - generic [ref=e41]:
+          - heading "Sales Overview" [level=3] [ref=e42]
+          - paragraph [ref=e43]: Comprehensive sales metrics and trends
+          - generic [ref=e44]:
+            - generic [ref=e45]: 2 widgets
+            - generic [ref=e46]: Updated 1/15/2024
+          - button "Open Dashboard" [ref=e47] [cursor=pointer]:
+            - text: Open Dashboard
+            - img [ref=e48]
+        - generic [ref=e51]:
+          - heading "Create Dashboard" [level=2] [ref=e52]
+          - generic [ref=e53]:
+            - generic [ref=e54]:
+              - generic [ref=e55]: Name
+              - textbox [ref=e56]
+            - generic [ref=e57]:
+              - generic [ref=e58]: Description
+              - textbox [ref=e59]
+            - generic [ref=e60]:
+              - button "Cancel" [ref=e61] [cursor=pointer]
+              - button "Create" [disabled] [ref=e62]
+```
