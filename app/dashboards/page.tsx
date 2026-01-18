@@ -5,20 +5,30 @@ import { useRouter } from 'next/navigation';
 import Layout from '@/components/Layout';
 import { Dashboard } from '@/lib/types';
 import { Plus, ArrowRight } from 'lucide-react';
+import { useUser } from '@/contexts/UserContext';
 
 export default function DashboardsPage() {
+  const { user } = useUser();
   const [dashboards, setDashboards] = useState<Dashboard[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    fetchDashboards();
-  }, []);
+    if (user) {
+      fetchDashboards();
+    }
+  }, [user]);
 
   const fetchDashboards = async () => {
+    if (!user) return;
+    
     try {
-      const response = await fetch('/api/dashboards');
+      const response = await fetch('/api/dashboards', {
+        headers: {
+          'x-user-id': user.id,
+        },
+      });
       const data = await response.json();
       setDashboards(data);
     } catch (error) {

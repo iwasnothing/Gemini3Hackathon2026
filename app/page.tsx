@@ -32,9 +32,9 @@ export default function Home() {
             className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow border border-gray-200"
           >
             <Box className="w-8 h-8 text-primary-600 mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Data Cubes</h2>
+            <h2 className="text-xl font-semibold mb-2">AI Semitic Data Layer</h2>
             <p className="text-gray-600">
-              Create data cubes using natural language queries
+              Create AI Semitic Data Layers with metadata using natural language queries
             </p>
           </Link>
 

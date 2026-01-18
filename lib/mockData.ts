@@ -1,101 +1,67 @@
-import { DataSource, Table, DataCube, Dashboard } from './types';
+import { DataSource, Table, DataCube, Dashboard, DataEntitlement } from './types';
 
 export const mockDataSources: DataSource[] = [
   {
-    id: 'ds-1',
-    name: 'Production PostgreSQL',
-    type: 'postgresql',
-    host: 'prod-db.company.com',
-    port: 5432,
-    database: 'analytics',
-    username: 'analytics_user',
-    status: 'connected',
-    lastSync: '2024-01-15T10:30:00Z',
-  },
-  {
-    id: 'ds-2',
-    name: 'Sales MySQL',
-    type: 'mysql',
-    host: 'sales-db.company.com',
-    port: 3306,
-    database: 'sales',
-    username: 'sales_readonly',
-    status: 'connected',
-    lastSync: '2024-01-15T09:15:00Z',
-  },
-  {
-    id: 'ds-3',
-    name: 'Data Warehouse',
-    type: 'snowflake',
-    host: 'company.snowflakecomputing.com',
+    id: 'ds-4',
+    name: 'GCP BigQuery',
+    type: 'bigquery',
+    host: 'my-analytics-project', // Project ID
     port: 443,
-    database: 'WAREHOUSE',
-    username: 'bi_user',
-    status: 'disconnected',
+    database: 'analytics_dataset', // Dataset
+    username: 'bigquery-service@my-analytics-project.iam.gserviceaccount.com',
+    status: 'connected',
+    lastSync: '2024-01-15T11:00:00Z',
+    projectId: 'my-analytics-project',
+    dataset: 'analytics_dataset',
+    location: 'US',
   },
 ];
 
 export const mockTables: Record<string, Table[]> = {
-  'ds-1': [
+  'ds-4': [
     {
-      name: 'orders',
-      schema: 'public',
+      name: 'user_events',
+      schema: 'analytics_dataset',
       columns: [
-        { name: 'id', type: 'bigint', primaryKey: true },
-        {
-          name: 'customer_id',
-          type: 'bigint',
-          foreignKey: { referencedTable: 'customers', referencedColumn: 'id' },
-        },
-        { name: 'order_date', type: 'timestamp' },
-        { name: 'total_amount', type: 'decimal(10,2)' },
-        { name: 'status', type: 'varchar(50)' },
-        { name: 'shipping_address', type: 'text' },
+        { name: 'event_id', type: 'STRING', primaryKey: true },
+        { name: 'user_id', type: 'STRING' },
+        { name: 'event_type', type: 'STRING' },
+        { name: 'event_timestamp', type: 'TIMESTAMP' },
+        { name: 'session_id', type: 'STRING' },
+        { name: 'properties', type: 'JSON' },
       ],
-      rowCount: 152340,
-      description: 'Customer orders with details',
+      rowCount: 5234100,
+      description: 'User interaction events tracked in analytics',
     },
     {
-      name: 'customers',
-      schema: 'public',
+      name: 'pageviews',
+      schema: 'analytics_dataset',
       columns: [
-        { name: 'id', type: 'bigint', primaryKey: true },
-        { name: 'email', type: 'varchar(255)' },
-        { name: 'first_name', type: 'varchar(100)' },
-        { name: 'last_name', type: 'varchar(100)' },
-        { name: 'created_at', type: 'timestamp' },
-        { name: 'country', type: 'varchar(2)' },
+        { name: 'pageview_id', type: 'STRING', primaryKey: true },
+        { name: 'user_id', type: 'STRING' },
+        { name: 'page_path', type: 'STRING' },
+        { name: 'page_title', type: 'STRING' },
+        { name: 'timestamp', type: 'TIMESTAMP' },
+        { name: 'device_type', type: 'STRING' },
+        { name: 'country', type: 'STRING' },
       ],
-      rowCount: 45230,
-      description: 'Customer information',
+      rowCount: 8923400,
+      description: 'Page view analytics from web traffic',
     },
-    {
-      name: 'products',
-      schema: 'public',
-      columns: [
-        { name: 'id', type: 'bigint', primaryKey: true },
-        { name: 'name', type: 'varchar(255)' },
-        { name: 'category', type: 'varchar(100)' },
-        { name: 'price', type: 'decimal(10,2)' },
-        { name: 'stock_quantity', type: 'integer' },
-      ],
-      rowCount: 1250,
-      description: 'Product catalog',
-    },
-  ],
-  'ds-2': [
     {
       name: 'transactions',
-      schema: 'sales',
+      schema: 'analytics_dataset',
       columns: [
-        { name: 'transaction_id', type: 'bigint', primaryKey: true },
-        { name: 'account_id', type: 'bigint' },
-        { name: 'amount', type: 'decimal(12,2)' },
-        { name: 'transaction_date', type: 'date' },
-        { name: 'transaction_type', type: 'varchar(50)' },
+        { name: 'transaction_id', type: 'STRING', primaryKey: true },
+        { name: 'user_id', type: 'STRING' },
+        { name: 'product_id', type: 'STRING' },
+        { name: 'amount', type: 'NUMERIC' },
+        { name: 'currency', type: 'STRING' },
+        { name: 'transaction_date', type: 'DATE' },
+        { name: 'status', type: 'STRING' },
       ],
-      rowCount: 893450,
-      description: 'Financial transactions',
+      rowCount: 234500,
+      description: 'E-commerce transaction records',
     },
   ],
 };
@@ -159,4 +125,22 @@ export const mockDashboards: Dashboard[] = [
     createdAt: '2024-01-10T08:00:00Z',
     updatedAt: '2024-01-15T10:00:00Z',
   },
+];
+
+// Mock entitlements - defines what resources each user can access
+export const mockEntitlements: DataEntitlement[] = [
+  // Admin user (user-1) has access to everything
+  { id: 'ent-1', userId: 'user-1', resourceType: 'dataSource', resourceId: 'ds-4', permissions: ['read', 'write', 'delete'], grantedAt: '2024-01-01T00:00:00Z', grantedBy: 'system' },
+  { id: 'ent-2', userId: 'user-1', resourceType: 'dataCube', resourceId: 'cube-1', permissions: ['read', 'write', 'delete'], grantedAt: '2024-01-01T00:00:00Z', grantedBy: 'system' },
+  { id: 'ent-3', userId: 'user-1', resourceType: 'dataCube', resourceId: 'cube-2', permissions: ['read', 'write', 'delete'], grantedAt: '2024-01-01T00:00:00Z', grantedBy: 'system' },
+  { id: 'ent-4', userId: 'user-1', resourceType: 'dashboard', resourceId: 'dash-1', permissions: ['read', 'write', 'delete'], grantedAt: '2024-01-01T00:00:00Z', grantedBy: 'system' },
+  
+  // Analyst user (user-2) has read/write access to specific resources
+  { id: 'ent-5', userId: 'user-2', resourceType: 'dataSource', resourceId: 'ds-4', permissions: ['read'], grantedAt: '2024-01-05T00:00:00Z', grantedBy: 'user-1' },
+  { id: 'ent-6', userId: 'user-2', resourceType: 'dataCube', resourceId: 'cube-1', permissions: ['read', 'write'], grantedAt: '2024-01-05T00:00:00Z', grantedBy: 'user-1' },
+  { id: 'ent-7', userId: 'user-2', resourceType: 'dashboard', resourceId: 'dash-1', permissions: ['read', 'write'], grantedAt: '2024-01-05T00:00:00Z', grantedBy: 'user-1' },
+  
+  // Viewer user (user-3) has read-only access to limited resources
+  { id: 'ent-8', userId: 'user-3', resourceType: 'dataCube', resourceId: 'cube-1', permissions: ['read'], grantedAt: '2024-01-08T00:00:00Z', grantedBy: 'user-1' },
+  { id: 'ent-9', userId: 'user-3', resourceType: 'dashboard', resourceId: 'dash-1', permissions: ['read'], grantedAt: '2024-01-08T00:00:00Z', grantedBy: 'user-1' },
 ];

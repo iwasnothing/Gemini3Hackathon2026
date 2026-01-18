@@ -5,24 +5,34 @@ import { useRouter } from 'next/navigation';
 import Layout from '@/components/Layout';
 import { DataCube } from '@/lib/types';
 import { Plus, Search, ArrowRight } from 'lucide-react';
+import { useUser } from '@/contexts/UserContext';
 
 export default function DataCubesPage() {
+  const { user } = useUser();
   const [dataCubes, setDataCubes] = useState<DataCube[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    fetchDataCubes();
-  }, []);
+    if (user) {
+      fetchDataCubes();
+    }
+  }, [user]);
 
   const fetchDataCubes = async () => {
+    if (!user) return;
+    
     try {
-      const response = await fetch('/api/data-cubes');
+      const response = await fetch('/api/data-cubes', {
+        headers: {
+          'x-user-id': user.id,
+        },
+      });
       const data = await response.json();
       setDataCubes(data);
     } catch (error) {
-      console.error('Error fetching data cubes:', error);
+      console.error('Error fetching AI Semitic Data Layers:', error);
     } finally {
       setLoading(false);
     }
@@ -33,9 +43,9 @@ export default function DataCubesPage() {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Data Cubes</h1>
+            <h1 className="text-3xl font-bold text-gray-900">AI Semitic Data Layer</h1>
             <p className="text-gray-600 mt-1">
-              Create data cubes using natural language queries
+              Create AI Semitic Data Layers with metadata using natural language queries
             </p>
           </div>
           <button
@@ -43,7 +53,7 @@ export default function DataCubesPage() {
             className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 flex items-center gap-2"
           >
             <Plus className="w-5 h-5" />
-            Create Data Cube
+            Create AI Semitic Data Layer
           </button>
         </div>
 
@@ -158,19 +168,20 @@ function DataCubeModal({
           dataSourceId: 'ds-1',
           dimensions: ['month'],
           measures: ['sales', 'orders'],
+          metadata: {},
         }),
       });
       onSave();
       onClose();
     } catch (error) {
-      console.error('Error creating data cube:', error);
+      console.error('Error creating AI Semitic Data Layer:', error);
     }
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold mb-4">Create Data Cube</h2>
+        <h2 className="text-2xl font-bold mb-4">Create AI Semitic Data Layer</h2>
 
         <div className="space-y-4 mb-6">
           <div>
@@ -193,7 +204,7 @@ function DataCubeModal({
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe your data cube..."
+              placeholder="Describe your AI Semitic Data Layer..."
               rows={2}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
@@ -268,7 +279,7 @@ function DataCubeModal({
             disabled={!name.trim() || !query.trim()}
             className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Create Data Cube
+            Create AI Semitic Data Layer
           </button>
         </div>
       </div>

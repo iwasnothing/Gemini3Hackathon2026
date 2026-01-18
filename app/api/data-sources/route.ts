@@ -1,9 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { dataSourceService } from '@/lib/services/factory';
+import { filterDataSourcesByEntitlements, getUserFromRequest } from '@/lib/utils/entitlements';
 
-export async function GET() {
-  const sources = await dataSourceService.getAll();
-  return NextResponse.json(sources);
+export async function GET(request: NextRequest) {
+  const userId = getUserFromRequest(request);
+  const allSources = await dataSourceService.getAll();
+  const filteredSources = filterDataSourcesByEntitlements(allSources, userId);
+  return NextResponse.json(filteredSources);
 }
 
 export async function POST(request: Request) {
