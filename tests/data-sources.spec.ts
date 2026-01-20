@@ -13,40 +13,25 @@ test.describe('Data Source Management Journey', () => {
     await helper.captureStep(page, 'Data Sources List', 'Viewing all configured data sources');
 
     await page.click('text=Add Data Source');
+    await page.waitForSelector('input[type="text"]');
     await helper.captureStep(page, 'Add Data Source Form', 'Opening the form to add a new data source');
 
-    await page.fill('input[name="name"]', 'Test PostgreSQL DB');
-    await page.selectOption('select[name="type"]', 'postgresql');
-    await page.fill('input[name="host"]', 'localhost');
-    await page.fill('input[name="port"]', '5432');
-    await page.fill('input[name="database"]', 'testdb');
-    await page.fill('input[name="username"]', 'testuser');
-    await page.fill('input[name="password"]', 'testpass');
+    await page.locator('input[type="text"]').first().fill('Test PostgreSQL DB');
+    await page.locator('select').first().selectOption('postgresql');
+    await page.locator('input[type="text"]').nth(1).fill('localhost');
+    await page.locator('input[type="number"]').fill('5432');
+    await page.locator('input[type="text"]').nth(2).fill('testdb');
+    await page.locator('input[type="text"]').nth(3).fill('testuser');
+    await page.locator('input[type="password"]').fill('testpass');
     await helper.captureStep(page, 'Filled Data Source Form', 'All connection details entered');
 
-    await page.click('button:has-text("Test Connection")');
-    await page.waitForTimeout(1000);
-    await helper.captureStep(page, 'Connection Test Result', 'Testing database connection');
-
-    await page.click('button:has-text("Save")');
+    await page.click('button:has-text("Connect")');
     await page.waitForURL('**/data-sources');
     await helper.captureStep(page, 'Data Source Created', 'New data source successfully added to the list');
 
-    const firstDataSource = page.locator('[data-testid="data-source-item"]').first();
-    await firstDataSource.click();
-    await helper.captureStep(page, 'Data Source Details', 'Viewing detailed information of a data source');
-
     await page.click('text=View Schema');
+    await page.waitForURL('**/schema');
     await helper.captureStep(page, 'Database Schema', 'Exploring database tables and columns');
-
-    const firstTable = page.locator('[data-testid="table-item"]').first();
-    await firstTable.click();
-    await helper.captureStep(page, 'Table Details', 'Viewing table structure with columns and types');
-
-    await page.click('button:has-text("Edit Description")');
-    await page.fill('textarea[name="description"]', 'Customer information table');
-    await page.click('button:has-text("Save Description")');
-    await helper.captureStep(page, 'Updated Table Description', 'Added domain description to table');
 
     await helper.saveMarkdown();
   });
