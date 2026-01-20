@@ -8,6 +8,10 @@ export interface DataSource {
   username: string;
   status: 'connected' | 'disconnected' | 'error';
   lastSync?: string;
+  // BigQuery specific fields (optional, uses host/database as projectId/dataset for backward compatibility)
+  projectId?: string; // For BigQuery, stored in host if not provided
+  dataset?: string; // For BigQuery, stored in database if not provided
+  location?: string; // Optional BigQuery location
 }
 
 export interface Table {
@@ -37,6 +41,7 @@ export interface DataCube {
   dataSourceId: string;
   dimensions: string[];
   measures: string[];
+  metadata?: Record<string, any>;
   createdAt: string;
   data?: any[];
 }
@@ -67,4 +72,29 @@ export interface AIAssistantMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: string;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: 'admin' | 'analyst' | 'viewer';
+}
+
+export interface DataEntitlement {
+  id: string;
+  userId: string;
+  resourceType: 'dataSource' | 'dataCube' | 'dashboard';
+  resourceId: string;
+  permissions: ('read' | 'write' | 'delete')[];
+  grantedAt: string;
+  grantedBy: string;
+}
+
+export interface EntitledResource {
+  resourceType: 'dataSource' | 'dataCube' | 'dashboard';
+  resourceId: string;
+  resourceName: string;
+  permissions: ('read' | 'write' | 'delete')[];
+  grantedAt: string;
 }

@@ -24,7 +24,7 @@ export default function DataCubeDetailPage() {
       const found = data.find((c: DataCube) => c.id === cubeId);
       setCube(found || null);
     } catch (error) {
-      console.error('Error fetching data cube:', error);
+      console.error('Error fetching AI Semitic Data Layer:', error);
     } finally {
       setLoading(false);
     }
@@ -41,7 +41,7 @@ export default function DataCubeDetailPage() {
   if (!cube) {
     return (
       <Layout>
-        <div className="text-center py-12">Data cube not found</div>
+        <div className="text-center py-12">AI Semitic Data Layer not found</div>
       </Layout>
     );
   }
@@ -54,7 +54,7 @@ export default function DataCubeDetailPage() {
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
         >
           <ArrowLeft className="w-5 h-5" />
-          Back to Data Cubes
+          Back to AI Semitic Data Layer
         </button>
 
         <div className="mb-6">
@@ -103,6 +103,16 @@ export default function DataCubeDetailPage() {
                   ))}
                 </div>
               </div>
+              {cube.metadata && Object.keys(cube.metadata).length > 0 && (
+                <div>
+                  <div className="text-sm text-gray-500 mb-2">Additional Metadata</div>
+                  <div className="bg-gray-50 p-3 rounded border border-gray-200">
+                    <pre className="text-xs text-gray-700 whitespace-pre-wrap">
+                      {JSON.stringify(cube.metadata, null, 2)}
+                    </pre>
+                  </div>
+                </div>
+              )}
               <div className="pt-4 border-t border-gray-200">
                 <div className="text-sm text-gray-500">Created</div>
                 <div className="text-sm text-gray-900">

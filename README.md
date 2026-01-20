@@ -1,6 +1,6 @@
 # Insight Canvas - AI-Assisted Self-Served BI Dashboard Tool
 
-A modern, full-stack web application for building AI-assisted business intelligence dashboards. Users can configure data source connectors, view and edit database schemas, create data cubes using natural language queries, and build interactive dashboards with AI assistance.
+A modern, full-stack web application for building AI-assisted business intelligence dashboards. Users can configure data source connectors, view and edit database schemas, create AI Semitic Data Layers with metadata using natural language queries, and build interactive dashboards with AI assistance.
 
 ## Features
 
@@ -14,10 +14,11 @@ A modern, full-stack web application for building AI-assisted business intellige
 - Edit table and column descriptions (domain descriptions)
 - Explore table structures and relationships
 
-### 🎲 Data Cube Creation
-- Create data cubes using natural language queries
+### 🎲 AI Semitic Data Layer Creation
+- Create AI Semitic Data Layers with metadata using natural language queries
 - Preview query results before saving
 - Define dimensions and measures
+- Store and manage metadata for enhanced data understanding
 - Free-text query interface for intuitive data exploration
 
 ### 📈 Interactive Dashboards
@@ -78,10 +79,10 @@ insight-canvas/
 ├── app/                      # Next.js app directory
 │   ├── api/                  # API routes (backend)
 │   │   ├── data-sources/     # Data source endpoints
-│   │   ├── data-cubes/       # Data cube endpoints
+│   │   ├── data-cubes/       # AI Semitic Data Layer endpoints
 │   │   └── dashboards/       # Dashboard endpoints
 │   ├── data-sources/         # Data sources pages
-│   ├── data-cubes/           # Data cubes pages
+│   ├── data-cubes/           # AI Semitic Data Layer pages
 │   ├── dashboards/           # Dashboard pages
 │   ├── layout.tsx            # Root layout
 │   ├── page.tsx              # Home page
@@ -106,9 +107,9 @@ insight-canvas/
 - `POST /api/data-sources` - Create a new data source
 - `GET /api/data-sources/[id]/schema` - Get schema for a data source
 
-### Data Cubes
-- `GET /api/data-cubes` - List all data cubes
-- `POST /api/data-cubes` - Create a new data cube
+### AI Semitic Data Layers
+- `GET /api/data-cubes` - List all AI Semitic Data Layers
+- `POST /api/data-cubes` - Create a new AI Semitic Data Layer with metadata
 - `POST /api/data-cubes/query` - Execute a natural language query
 
 ### Dashboards
@@ -131,7 +132,7 @@ NEXT_PUBLIC_USE_MOCK=false
 
 2. Implement real services in `lib/services/real/`:
    - `RealDataSourceService.ts`
-   - `RealDataCubeService.ts`
+   - `RealDataCubeService.ts` (for AI Semitic Data Layers)
    - `RealDashboardService.ts`
 
 3. Update `lib/services/factory.ts` to use real implementations
