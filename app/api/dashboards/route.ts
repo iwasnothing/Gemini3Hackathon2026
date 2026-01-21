@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { dashboardService } from '@/lib/services/factory';
 import { filterDashboardsByEntitlements, getUserFromRequest } from '@/lib/utils/entitlements';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   const userId = getUserFromRequest(request);
   const allDashboards = await dashboardService.getAll();

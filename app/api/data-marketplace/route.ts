@@ -4,6 +4,7 @@ import { mockTables } from '@/lib/mockData';
 import { mockDataCubes } from '@/lib/mockData';
 import { mockDashboards } from '@/lib/mockData';
 import { filterDataSourcesByEntitlements, filterDataCubesByEntitlements, filterDashboardsByEntitlements, getUserFromRequest } from '@/lib/utils/entitlements';
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {

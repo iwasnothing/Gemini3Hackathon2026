@@ -3,6 +3,8 @@ import { mockEntitlements } from '@/lib/mockData';
 import { mockDataSources, mockDataCubes, mockDashboards } from '@/lib/mockData';
 import { EntitledResource } from '@/lib/types';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     // Get user ID from query parameter or header (in real app, this would come from auth token)

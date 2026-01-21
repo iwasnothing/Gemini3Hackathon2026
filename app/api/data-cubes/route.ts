@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { mockDataCubes } from '@/lib/mockData';
 import { filterDataCubesByEntitlements, getUserFromRequest } from '@/lib/utils/entitlements';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   const userId = getUserFromRequest(request);
   const filteredCubes = filterDataCubesByEntitlements(mockDataCubes, userId);
