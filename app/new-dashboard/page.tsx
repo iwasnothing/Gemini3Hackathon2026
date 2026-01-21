@@ -314,36 +314,39 @@ export default function NewDashboardPage() {
 
   return (
     <Layout>
-      <div className="h-full flex flex-col p-6">
+      <div className="h-full flex flex-col">
         {!hasMessages ? (
           // Centered chat interface (initial state)
-          <div className="flex-1 flex items-center justify-center">
-            <div className="w-full max-w-2xl px-6">
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full glass-strong mb-4">
-                  <Sparkles className="w-8 h-8 text-blue-400" />
+          <div className="flex-1 flex items-center justify-center p-8">
+            <div className="w-full max-w-3xl">
+              <div className="text-center mb-12 animate-fade-in">
+                <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl glass-strong mb-6 shadow-lg">
+                  <Sparkles className="w-10 h-10 text-blue-400" />
                 </div>
-                <h1 className="text-3xl font-bold text-white mb-2">
+                <h1 className="text-4xl font-bold text-white mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                   Create Your Dashboard
                 </h1>
-                <p className="text-gray-300 text-lg">
-                  Describe what you'd like to visualize and I'll build it for you
+                <p className="text-gray-300 text-xl mb-2">
+                  Describe what you'd like to visualize
+                </p>
+                <p className="text-gray-400 text-base">
+                  I'll build an interactive dashboard for you
                 </p>
               </div>
-              <div className="relative">
+              <div className="relative animate-slide-up">
                 <textarea
                   ref={inputRef}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="e.g., Create a sales dashboard with revenue trends and monthly breakdowns..."
-                  className="w-full px-6 py-4 pr-14 text-lg text-white glass rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none placeholder:text-gray-400"
-                  rows={4}
+                  placeholder="e.g., Create a sales dashboard with revenue trends, monthly breakdowns, and product performance metrics..."
+                  className="w-full px-6 py-5 pr-16 text-lg text-white glass rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 resize-none placeholder:text-gray-500 transition-all shadow-xl"
+                  rows={5}
                 />
                 <button
                   onClick={handleSend}
                   disabled={!input.trim() || isLoading}
-                  className="absolute right-3 bottom-3 p-2 glass-strong text-white rounded-xl hover:glass-active disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  className="absolute right-4 bottom-4 p-3 glass-strong text-white rounded-xl hover:glass-active hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all shadow-lg"
                 >
                   {isLoading ? (
                     <Loader className="w-5 h-5 animate-spin" />
@@ -352,29 +355,51 @@ export default function NewDashboardPage() {
                   )}
                 </button>
               </div>
+              <div className="mt-6 flex flex-wrap gap-3 justify-center">
+                <button
+                  onClick={() => setInput('Create a sales dashboard with revenue trends and monthly breakdowns')}
+                  className="px-4 py-2 text-sm glass rounded-lg text-gray-300 hover:glass-strong hover:text-white transition-all"
+                >
+                  Sales Dashboard
+                </button>
+                <button
+                  onClick={() => setInput('Create a user analytics dashboard showing growth and engagement metrics')}
+                  className="px-4 py-2 text-sm glass rounded-lg text-gray-300 hover:glass-strong hover:text-white transition-all"
+                >
+                  User Analytics
+                </button>
+                <button
+                  onClick={() => setInput('Create a financial dashboard with profit/loss trends and expense breakdowns')}
+                  className="px-4 py-2 text-sm glass rounded-lg text-gray-300 hover:glass-strong hover:text-white transition-all"
+                >
+                  Financial Dashboard
+                </button>
+              </div>
             </div>
           </div>
         ) : (
           // Split view: Chat left, Canvas right
-          <div className="flex-1 flex gap-6 overflow-hidden">
+          <div className="flex-1 flex gap-4 overflow-hidden p-4">
             {/* Chat Panel - Left */}
-            <div className="w-96 flex flex-col glass rounded-xl overflow-hidden">
-              <div className="p-4 border-b border-white/10">
+            <div className="w-[420px] flex flex-col glass rounded-2xl overflow-hidden shadow-xl border border-white/10">
+              <div className="p-5 border-b border-white/10 bg-white/5">
                 <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-blue-400" />
                   Chat Assistant
                 </h2>
+                <p className="text-xs text-gray-400 mt-1">Ask me to modify your dashboard</p>
               </div>
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {messages.map((message) => (
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+                {messages.map((message, index) => (
                   <div
                     key={message.id}
-                    className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                    className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}
+                    style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     <div
-                      className={`max-w-[85%] rounded-2xl px-4 py-3 ${
+                      className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-lg ${
                         message.role === 'user'
-                          ? 'glass-active text-white'
+                          ? 'glass-active text-white bg-gradient-to-br from-blue-500/20 to-purple-500/20'
                           : 'glass text-white'
                       }`}
                     >
@@ -388,8 +413,8 @@ export default function NewDashboardPage() {
                   </div>
                 ))}
                 {isLoading && (
-                  <div className="flex justify-start">
-                    <div className="glass rounded-2xl px-4 py-3">
+                  <div className="flex justify-start animate-fade-in">
+                    <div className="glass rounded-2xl px-4 py-3 shadow-lg">
                       <div className="flex items-center gap-2">
                         <Loader className="w-4 h-4 animate-spin text-blue-400" />
                         <span className="text-sm text-white">Thinking...</span>
@@ -399,20 +424,20 @@ export default function NewDashboardPage() {
                 )}
                 <div ref={messagesEndRef} />
               </div>
-              <div className="p-4 border-t border-white/10">
+              <div className="p-4 border-t border-white/10 bg-white/5">
                 <div className="relative">
                   <textarea
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Ask me to modify the dashboard..."
-                    className="w-full px-4 py-3 pr-12 text-sm glass rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none transition-all"
+                    className="w-full px-4 py-3 pr-12 text-sm glass rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 resize-none transition-all"
                     rows={2}
                   />
                   <button
                     onClick={handleSend}
                     disabled={!input.trim() || isLoading}
-                    className="absolute right-2 bottom-2 p-2 glass-strong text-white rounded-lg hover:glass-active disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    className="absolute right-2 bottom-2 p-2 glass-strong text-white rounded-lg hover:glass-active hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all"
                   >
                     {isLoading ? (
                       <Loader className="w-4 h-4 animate-spin" />
@@ -425,10 +450,10 @@ export default function NewDashboardPage() {
             </div>
 
             {/* Canvas Panel - Right */}
-            <div className="flex-1 overflow-y-auto">
-              <div className="max-w-7xl mx-auto p-6">
-                <div className="mb-6 glass rounded-xl p-6">
-                  <h2 className="text-2xl font-bold text-white mb-2">
+            <div className="flex-1 overflow-y-auto rounded-2xl">
+              <div className="h-full p-6">
+                <div className="mb-6 glass rounded-2xl p-6 shadow-xl border border-white/10">
+                  <h2 className="text-2xl font-bold text-white mb-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                     {dashboard?.name || 'Dashboard Preview'}
                   </h2>
                   <p className="text-gray-300">
@@ -437,13 +462,14 @@ export default function NewDashboardPage() {
                 </div>
                 {dashboard?.widgets && dashboard.widgets.length > 0 ? (
                   <div className="grid grid-cols-12 gap-4">
-                    {dashboard.widgets.map((widget) => (
+                    {dashboard.widgets.map((widget, index) => (
                       <div
                         key={widget.id}
-                        className="glass rounded-xl p-6 hover:glass-strong transition-all"
+                        className="glass rounded-2xl p-6 hover:glass-strong transition-all shadow-lg border border-white/10 animate-fade-in"
                         style={{
                           gridColumn: `span ${widget.width}`,
                           gridRow: `span ${widget.height}`,
+                          animationDelay: `${index * 0.1}s`,
                         }}
                       >
                         <h3 className="text-lg font-semibold text-white mb-4">
@@ -559,8 +585,11 @@ export default function NewDashboardPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 text-gray-500">
-                    Waiting for dashboard description...
+                  <div className="text-center py-20">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full glass-strong mb-4">
+                      <Sparkles className="w-8 h-8 text-blue-400" />
+                    </div>
+                    <p className="text-gray-400 text-lg">Waiting for dashboard description...</p>
                   </div>
                 )}
               </div>

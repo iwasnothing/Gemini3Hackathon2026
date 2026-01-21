@@ -8,6 +8,7 @@ import { useUser } from '@/contexts/UserContext';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'New Dashboard', href: '/new-dashboard', icon: Sparkles },
   { name: 'Analytics', href: '/dashboards', icon: BarChart3 },
   { name: 'Reports', href: '/data-cubes', icon: FileText },
   { name: 'Settings', href: '/data-sources', icon: Settings },
