@@ -1,0 +1,26 @@
+steps:
+  # Step 1: Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/my-app:$COMMIT_SHA', '.']
+
+  # Step 2: Push the image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/my-app:$COMMIT_SHA']
+
+  # Step 3: Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'YOUR-SERVICE-NAME' # CHANGE THIS
+      - '--image'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/my-app:$COMMIT_SHA'
+      - '--region'
+      - 'us-central1' # CHANGE THIS if needed
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated' # Remove this if you want private access only
+
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/my-app:$COMMIT_SHA'

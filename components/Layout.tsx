@@ -8,9 +8,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isFullHeight = pathname === '/new-dashboard';
   
   return (
-    <div className={`flex ${isFullHeight ? 'h-screen' : 'min-h-screen'} bg-gray-50 ${isFullHeight ? 'overflow-hidden' : ''}`}>
+    <div className={`flex ${isFullHeight ? 'h-screen' : 'min-h-screen'} ${isFullHeight ? 'overflow-hidden' : ''} relative`}>
       <Sidebar />
-      <main className={`flex-1 ${isFullHeight ? 'overflow-hidden' : 'p-8'}`}>{children}</main>
+      <main className={`flex-1 ${isFullHeight ? 'overflow-hidden' : 'p-8'} relative z-10`}>{children}</main>
     </div>
   );
 }

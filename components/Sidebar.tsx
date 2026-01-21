@@ -2,16 +2,15 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Database, LayoutDashboard, Box, Settings, Home, Store, Shield, User, Sparkles } from 'lucide-react';
+import { Database, LayoutDashboard, Box, Settings, Home, Store, Shield, User, Sparkles, BarChart3, FileText, LogOut } from 'lucide-react';
 import clsx from 'clsx';
 import { useUser } from '@/contexts/UserContext';
 
 const navigation = [
-  { name: 'Home', href: '/', icon: Home },
-  { name: 'New Dashboard', href: '/new-dashboard', icon: Sparkles },
-  { name: 'Data Sources', href: '/data-sources', icon: Database },
-  { name: 'AI Semitic Data Layer', href: '/data-cubes', icon: Box },
-  { name: 'Dashboards', href: '/dashboards', icon: LayoutDashboard },
+  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'Analytics', href: '/dashboards', icon: BarChart3 },
+  { name: 'Reports', href: '/data-cubes', icon: FileText },
+  { name: 'Settings', href: '/data-sources', icon: Settings },
   { name: 'Data Marketplace', href: '/data-marketplace', icon: Store },
   { name: 'Data Entitlement', href: '/data-entitlement', icon: Shield },
 ];
@@ -21,44 +20,48 @@ export default function Sidebar() {
   const { user } = useUser();
 
   return (
-    <div className="w-64 bg-gray-900 text-white min-h-screen p-4 flex flex-col">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-primary-400">Insight Canvas</h1>
-        <p className="text-sm text-gray-400 mt-1">AI-Assisted BI</p>
+    <div className="w-64 glass min-h-screen p-6 flex flex-col relative z-10">
+      {/* Logo */}
+      <div className="mb-8 flex items-center gap-3">
+        <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center border border-white/30">
+          <span className="text-xl font-bold text-white">S</span>
+        </div>
+        <span className="text-lg font-semibold text-white">SaaS Co.</span>
       </div>
-      <nav className="space-y-2 flex-1">
+
+      {/* Navigation */}
+      <nav className="space-y-1 flex-1">
         {navigation.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
+          const isActive = pathname === item.href || (item.href === '/' && pathname === '/');
           return (
             <Link
               key={item.name}
               href={item.href}
               className={clsx(
-                'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
+                'flex items-center gap-3 px-4 py-3 rounded-lg transition-all relative',
                 isActive
-                  ? 'bg-primary-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                  ? 'glass-active text-white'
+                  : 'text-gray-300 hover:glass-strong hover:text-white'
               )}
             >
-              <Icon className="w-5 h-5" />
-              <span>{item.name}</span>
+              {isActive && (
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-400 to-purple-500 rounded-r-full" />
+              )}
+              <Icon className={clsx('w-5 h-5', isActive ? 'text-white' : 'text-gray-300')} />
+              <span className="text-sm font-medium">{item.name}</span>
             </Link>
           );
         })}
       </nav>
-      {user && (
-        <div className="mt-auto pt-4 border-t border-gray-700">
-          <div className="flex items-center gap-2 px-4 py-2 text-sm">
-            <User className="w-4 h-4 text-gray-400" />
-            <div className="flex-1 min-w-0">
-              <div className="text-white font-medium truncate">{user.name}</div>
-              <div className="text-gray-400 text-xs truncate">{user.email}</div>
-              <div className="text-gray-500 text-xs mt-1">Role: {user.role}</div>
-            </div>
-          </div>
+
+      {/* Footer */}
+      <div className="mt-auto pt-4 border-t border-white/10">
+        <div className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300">
+          <LogOut className="w-4 h-4" />
+          <span>SaaS Co.</span>
         </div>
-      )}
+      </div>
     </div>
   );
 }

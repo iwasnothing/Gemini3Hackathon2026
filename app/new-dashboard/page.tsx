@@ -317,16 +317,16 @@ export default function NewDashboardPage() {
       <div className="h-full flex flex-col p-6">
         {!hasMessages ? (
           // Centered chat interface (initial state)
-          <div className="flex-1 flex items-center justify-center bg-white">
+          <div className="flex-1 flex items-center justify-center">
             <div className="w-full max-w-2xl px-6">
               <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 mb-4">
-                  <Sparkles className="w-8 h-8 text-primary-600" />
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full glass-strong mb-4">
+                  <Sparkles className="w-8 h-8 text-blue-400" />
                 </div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                <h1 className="text-3xl font-bold text-white mb-2">
                   Create Your Dashboard
                 </h1>
-                <p className="text-gray-600 text-lg">
+                <p className="text-gray-300 text-lg">
                   Describe what you'd like to visualize and I'll build it for you
                 </p>
               </div>
@@ -337,13 +337,13 @@ export default function NewDashboardPage() {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="e.g., Create a sales dashboard with revenue trends and monthly breakdowns..."
-                  className="w-full px-6 py-4 pr-14 text-lg text-gray-900 bg-white border-2 border-gray-300 rounded-2xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 resize-none placeholder:text-gray-400"
+                  className="w-full px-6 py-4 pr-14 text-lg text-white glass rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none placeholder:text-gray-400"
                   rows={4}
                 />
                 <button
                   onClick={handleSend}
                   disabled={!input.trim() || isLoading}
-                  className="absolute right-3 bottom-3 p-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="absolute right-3 bottom-3 p-2 glass-strong text-white rounded-xl hover:glass-active disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   {isLoading ? (
                     <Loader className="w-5 h-5 animate-spin" />
@@ -358,29 +358,29 @@ export default function NewDashboardPage() {
           // Split view: Chat left, Canvas right
           <div className="flex-1 flex gap-6 overflow-hidden">
             {/* Chat Panel - Left */}
-            <div className="w-96 flex flex-col border-r border-gray-200 bg-white shadow-sm">
-              <div className="p-4 border-b border-gray-200 bg-gray-50">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-primary-600" />
+            <div className="w-96 flex flex-col glass rounded-xl overflow-hidden">
+              <div className="p-4 border-b border-white/10">
+                <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-blue-400" />
                   Chat Assistant
                 </h2>
               </div>
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {messages.map((message) => (
                   <div
                     key={message.id}
                     className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
                     <div
-                      className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-sm ${
+                      className={`max-w-[85%] rounded-2xl px-4 py-3 ${
                         message.role === 'user'
-                          ? 'bg-primary-600 text-white'
-                          : 'bg-white text-gray-900 border border-gray-200'
+                          ? 'glass-active text-white'
+                          : 'glass text-white'
                       }`}
                     >
                       <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
                       <p className={`text-xs mt-2 ${
-                        message.role === 'user' ? 'text-primary-100' : 'text-gray-400'
+                        message.role === 'user' ? 'text-gray-300' : 'text-gray-400'
                       }`}>
                         {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
@@ -389,30 +389,30 @@ export default function NewDashboardPage() {
                 ))}
                 {isLoading && (
                   <div className="flex justify-start">
-                    <div className="bg-white border border-gray-200 rounded-2xl px-4 py-3 shadow-sm">
+                    <div className="glass rounded-2xl px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <Loader className="w-4 h-4 animate-spin text-primary-600" />
-                        <span className="text-sm text-gray-600">Thinking...</span>
+                        <Loader className="w-4 h-4 animate-spin text-blue-400" />
+                        <span className="text-sm text-white">Thinking...</span>
                       </div>
                     </div>
                   </div>
                 )}
                 <div ref={messagesEndRef} />
               </div>
-              <div className="p-4 border-t border-gray-200 bg-white">
+              <div className="p-4 border-t border-white/10">
                 <div className="relative">
                   <textarea
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Ask me to modify the dashboard..."
-                    className="w-full px-4 py-3 pr-12 text-sm border-2 border-gray-300 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 resize-none transition-colors"
+                    className="w-full px-4 py-3 pr-12 text-sm glass rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none transition-all"
                     rows={2}
                   />
                   <button
                     onClick={handleSend}
                     disabled={!input.trim() || isLoading}
-                    className="absolute right-2 bottom-2 p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                    className="absolute right-2 bottom-2 p-2 glass-strong text-white rounded-lg hover:glass-active disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                   >
                     {isLoading ? (
                       <Loader className="w-4 h-4 animate-spin" />
@@ -425,13 +425,13 @@ export default function NewDashboardPage() {
             </div>
 
             {/* Canvas Panel - Right */}
-            <div className="flex-1 overflow-y-auto bg-gray-50">
+            <div className="flex-1 overflow-y-auto">
               <div className="max-w-7xl mx-auto p-6">
-                <div className="mb-6 bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                <div className="mb-6 glass rounded-xl p-6">
+                  <h2 className="text-2xl font-bold text-white mb-2">
                     {dashboard?.name || 'Dashboard Preview'}
                   </h2>
-                  <p className="text-gray-600">
+                  <p className="text-gray-300">
                     {dashboard?.description || 'Your dashboard will appear here'}
                   </p>
                 </div>
@@ -440,17 +440,17 @@ export default function NewDashboardPage() {
                     {dashboard.widgets.map((widget) => (
                       <div
                         key={widget.id}
-                        className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+                        className="glass rounded-xl p-6 hover:glass-strong transition-all"
                         style={{
                           gridColumn: `span ${widget.width}`,
                           gridRow: `span ${widget.height}`,
                         }}
                       >
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                        <h3 className="text-lg font-semibold text-white mb-4">
                           {widget.title}
                         </h3>
                         {widget.type === 'metric' && (
-                          <div className="text-4xl font-bold text-primary-600">
+                          <div className="text-4xl font-bold text-white">
                             {typeof widget.config.value === 'number'
                               ? `$${widget.config.value.toLocaleString()}`
                               : widget.config.value}
@@ -459,16 +459,24 @@ export default function NewDashboardPage() {
                         {widget.type === 'line' && (
                           <ResponsiveContainer width="100%" height={300}>
                             <LineChart data={mockData}>
-                              <CartesianGrid strokeDasharray="3 3" />
-                              <XAxis dataKey="month" />
-                              <YAxis />
-                              <Tooltip />
-                              <Legend />
+                              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                              <XAxis dataKey="month" stroke="rgba(255,255,255,0.5)" />
+                              <YAxis stroke="rgba(255,255,255,0.5)" />
+                              <Tooltip 
+                                contentStyle={{ 
+                                  backgroundColor: 'rgba(0,0,0,0.8)',
+                                  border: '1px solid rgba(255,255,255,0.2)',
+                                  borderRadius: '8px',
+                                  color: '#fff'
+                                }}
+                              />
+                              <Legend wrapperStyle={{ color: 'rgba(255,255,255,0.7)' }} />
                               <Line
                                 type="monotone"
                                 dataKey="value"
-                                stroke="#0ea5e9"
+                                stroke="#6366f1"
                                 strokeWidth={2}
+                                dot={false}
                               />
                             </LineChart>
                           </ResponsiveContainer>
@@ -476,12 +484,19 @@ export default function NewDashboardPage() {
                         {widget.type === 'bar' && (
                           <ResponsiveContainer width="100%" height={300}>
                             <BarChart data={mockData}>
-                              <CartesianGrid strokeDasharray="3 3" />
-                              <XAxis dataKey="month" />
-                              <YAxis />
-                              <Tooltip />
-                              <Legend />
-                              <Bar dataKey="value" fill="#0ea5e9" />
+                              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                              <XAxis dataKey="month" stroke="rgba(255,255,255,0.5)" />
+                              <YAxis stroke="rgba(255,255,255,0.5)" />
+                              <Tooltip 
+                                contentStyle={{ 
+                                  backgroundColor: 'rgba(0,0,0,0.8)',
+                                  border: '1px solid rgba(255,255,255,0.2)',
+                                  borderRadius: '8px',
+                                  color: '#fff'
+                                }}
+                              />
+                              <Legend wrapperStyle={{ color: 'rgba(255,255,255,0.7)' }} />
+                              <Bar dataKey="value" fill="#6366f1" />
                             </BarChart>
                           </ResponsiveContainer>
                         )}
@@ -507,7 +522,14 @@ export default function NewDashboardPage() {
                                   />
                                 ))}
                               </Pie>
-                              <Tooltip />
+                              <Tooltip 
+                                contentStyle={{ 
+                                  backgroundColor: 'rgba(0,0,0,0.8)',
+                                  border: '1px solid rgba(255,255,255,0.2)',
+                                  borderRadius: '8px',
+                                  color: '#fff'
+                                }}
+                              />
                             </PieChart>
                           </ResponsiveContainer>
                         )}
@@ -515,18 +537,18 @@ export default function NewDashboardPage() {
                           <div className="overflow-x-auto">
                             <table className="w-full text-sm">
                               <thead>
-                                <tr className="border-b">
-                                  <th className="text-left py-2 px-4">Column 1</th>
-                                  <th className="text-left py-2 px-4">Column 2</th>
-                                  <th className="text-left py-2 px-4">Column 3</th>
+                                <tr className="border-b border-white/10">
+                                  <th className="text-left py-2 px-4 text-white">Column 1</th>
+                                  <th className="text-left py-2 px-4 text-white">Column 2</th>
+                                  <th className="text-left py-2 px-4 text-white">Column 3</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {[1, 2, 3, 4, 5].map((i) => (
-                                  <tr key={i} className="border-b">
-                                    <td className="py-2 px-4">Row {i} Col 1</td>
-                                    <td className="py-2 px-4">Row {i} Col 2</td>
-                                    <td className="py-2 px-4">Row {i} Col 3</td>
+                                  <tr key={i} className="border-b border-white/10">
+                                    <td className="py-2 px-4 text-gray-300">Row {i} Col 1</td>
+                                    <td className="py-2 px-4 text-gray-300">Row {i} Col 2</td>
+                                    <td className="py-2 px-4 text-gray-300">Row {i} Col 3</td>
                                   </tr>
                                 ))}
                               </tbody>

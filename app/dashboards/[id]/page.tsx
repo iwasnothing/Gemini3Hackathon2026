@@ -7,6 +7,7 @@ import { Dashboard, AIAssistantMessage } from '@/lib/types';
 import {
   LineChart,
   Line,
+  Area,
   BarChart,
   Bar,
   PieChart,
@@ -66,7 +67,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <Layout>
-        <div className="text-center py-12">Loading dashboard...</div>
+        <div className="text-center py-12 text-white">Loading dashboard...</div>
       </Layout>
     );
   }
@@ -74,7 +75,7 @@ export default function DashboardPage() {
   if (!dashboard) {
     return (
       <Layout>
-        <div className="text-center py-12">Dashboard not found</div>
+        <div className="text-center py-12 text-white">Dashboard not found</div>
       </Layout>
     );
   }
@@ -83,15 +84,15 @@ export default function DashboardPage() {
     <Layout>
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-start mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+          <div className="glass rounded-xl p-6 flex-1">
+            <h1 className="text-3xl font-bold text-white mb-2">
               {dashboard.name}
             </h1>
-            <p className="text-gray-600 mt-1">{dashboard.description}</p>
+            <p className="text-gray-300 mt-1">{dashboard.description}</p>
           </div>
           <button
             onClick={() => setShowAIAssistant(!showAIAssistant)}
-            className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 flex items-center gap-2"
+            className="glass-strong px-6 py-3 rounded-lg text-white font-medium hover:glass-active transition-all flex items-center gap-2 ml-4"
           >
             <MessageCircle className="w-5 h-5" />
             AI Assistant
@@ -102,32 +103,48 @@ export default function DashboardPage() {
           {dashboard.widgets.map((widget) => (
             <div
               key={widget.id}
-              className="bg-white rounded-lg shadow border border-gray-200 p-6"
+              className="glass rounded-xl p-6"
               style={{
                 gridColumn: widget.width === 8 ? 'span 2' : 'span 1',
               }}
             >
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <h3 className="text-lg font-semibold text-white mb-4">
                 {widget.title}
               </h3>
               {widget.type === 'metric' && (
-                <div className="text-4xl font-bold text-primary-600">
+                <div className="text-4xl font-bold text-white">
                   ${widget.config.value?.toLocaleString()}
                 </div>
               )}
               {widget.type === 'line' && (
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={mockData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
+                    <defs>
+                      <linearGradient id="colorLine" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.1}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <XAxis dataKey="month" stroke="rgba(255,255,255,0.5)" />
+                    <YAxis stroke="rgba(255,255,255,0.5)" />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        borderRadius: '8px',
+                        color: '#fff'
+                      }}
+                    />
+                    <Legend 
+                      wrapperStyle={{ color: 'rgba(255,255,255,0.7)' }}
+                    />
                     <Line
                       type="monotone"
                       dataKey="total_sales"
-                      stroke="#0ea5e9"
+                      stroke="#6366f1"
                       strokeWidth={2}
+                      dot={false}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -135,12 +152,21 @@ export default function DashboardPage() {
               {widget.type === 'bar' && (
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={mockData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="total_sales" fill="#0ea5e9" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <XAxis dataKey="month" stroke="rgba(255,255,255,0.5)" />
+                    <YAxis stroke="rgba(255,255,255,0.5)" />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        borderRadius: '8px',
+                        color: '#fff'
+                      }}
+                    />
+                    <Legend 
+                      wrapperStyle={{ color: 'rgba(255,255,255,0.7)' }}
+                    />
+                    <Bar dataKey="total_sales" fill="#6366f1" />
                   </BarChart>
                 </ResponsiveContainer>
               )}
@@ -166,7 +192,14 @@ export default function DashboardPage() {
                         />
                       ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        borderRadius: '8px',
+                        color: '#fff'
+                      }}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               )}
@@ -174,7 +207,7 @@ export default function DashboardPage() {
           ))}
 
           {dashboard.widgets.length === 0 && (
-            <div className="col-span-3 text-center py-12 text-gray-500">
+            <div className="col-span-3 text-center py-12 text-gray-400 glass rounded-xl">
               No widgets added yet. Add widgets to visualize your data.
             </div>
           )}
@@ -246,12 +279,12 @@ function AIAssistant({ dashboardId }: { dashboardId: string }) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 mt-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-        <MessageCircle className="w-5 h-5 text-primary-600" />
+    <div className="glass rounded-xl p-6 mt-6">
+      <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+        <MessageCircle className="w-5 h-5 text-blue-400" />
         AI Assistant
       </h2>
-      <div className="h-96 overflow-y-auto mb-4 space-y-4 border border-gray-200 rounded-lg p-4 bg-gray-50">
+      <div className="h-96 overflow-y-auto mb-4 space-y-4 glass-strong rounded-lg p-4">
         {messages.map((message) => (
           <div
             key={message.id}
@@ -262,16 +295,16 @@ function AIAssistant({ dashboardId }: { dashboardId: string }) {
             <div
               className={`max-w-[80%] rounded-lg p-3 ${
                 message.role === 'user'
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-white text-gray-900 border border-gray-200'
+                  ? 'glass-active text-white'
+                  : 'glass text-white'
               }`}
             >
               <p className="text-sm">{message.content}</p>
               <p
                 className={`text-xs mt-1 ${
                   message.role === 'user'
-                    ? 'text-primary-100'
-                    : 'text-gray-500'
+                    ? 'text-gray-300'
+                    : 'text-gray-400'
                 }`}
               >
                 {new Date(message.timestamp).toLocaleTimeString()}
@@ -281,7 +314,7 @@ function AIAssistant({ dashboardId }: { dashboardId: string }) {
         ))}
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-white text-gray-900 border border-gray-200 rounded-lg p-3 flex items-center gap-2">
+            <div className="glass text-white rounded-lg p-3 flex items-center gap-2">
               <Loader className="w-4 h-4 animate-spin" />
               <span className="text-sm">Thinking...</span>
             </div>
@@ -295,12 +328,12 @@ function AIAssistant({ dashboardId }: { dashboardId: string }) {
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && handleSend()}
           placeholder="Ask a question about the dashboard data..."
-          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          className="flex-1 px-4 py-2 glass rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <button
           onClick={handleSend}
           disabled={loading || !input.trim()}
-          className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          className="glass-strong px-6 py-2 rounded-lg text-white hover:glass-active disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
         >
           <Send className="w-5 h-5" />
         </button>

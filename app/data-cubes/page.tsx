@@ -42,15 +42,15 @@ export default function DataCubesPage() {
     <Layout>
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">AI Semitic Data Layer</h1>
-            <p className="text-gray-600 mt-1">
+          <div className="glass rounded-xl p-6 flex-1">
+            <h1 className="text-3xl font-bold text-white mb-2">AI Semitic Data Layer</h1>
+            <p className="text-gray-300 mt-1">
               Create AI Semitic Data Layers with metadata using natural language queries
             </p>
           </div>
           <button
             onClick={() => setShowModal(true)}
-            className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 flex items-center gap-2"
+            className="glass-strong px-6 py-3 rounded-lg text-white font-medium hover:glass-active transition-all flex items-center gap-2 ml-4"
           >
             <Plus className="w-5 h-5" />
             Create AI Semitic Data Layer
@@ -58,27 +58,27 @@ export default function DataCubesPage() {
         </div>
 
         {loading ? (
-          <div className="text-center py-12">Loading...</div>
+          <div className="text-center py-12 text-white">Loading...</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {dataCubes.map((cube) => (
               <div
                 key={cube.id}
-                className="bg-white rounded-lg shadow border border-gray-200 p-6 hover:shadow-lg transition-shadow"
+                className="glass rounded-xl p-6 hover:glass-strong transition-all"
               >
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-lg font-semibold text-white mb-2">
                   {cube.name}
                 </h3>
-                <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                <p className="text-sm text-gray-300 mb-4 line-clamp-2">
                   {cube.description}
                 </p>
                 <div className="mb-4">
-                  <div className="text-xs text-gray-500 mb-1">Dimensions</div>
+                  <div className="text-xs text-gray-400 mb-1">Dimensions</div>
                   <div className="flex flex-wrap gap-2">
                     {cube.dimensions.map((dim) => (
                       <span
                         key={dim}
-                        className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded"
+                        className="px-2 py-1 bg-blue-500/20 text-blue-300 text-xs rounded border border-blue-500/30"
                       >
                         {dim}
                       </span>
@@ -86,24 +86,24 @@ export default function DataCubesPage() {
                   </div>
                 </div>
                 <div className="mb-4">
-                  <div className="text-xs text-gray-500 mb-1">Measures</div>
+                  <div className="text-xs text-gray-400 mb-1">Measures</div>
                   <div className="flex flex-wrap gap-2">
                     {cube.measures.map((measure) => (
                       <span
                         key={measure}
-                        className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded"
+                        className="px-2 py-1 bg-green-500/20 text-green-300 text-xs rounded border border-green-500/30"
                       >
                         {measure}
                       </span>
                     ))}
                   </div>
                 </div>
-                <div className="text-xs text-gray-500 mb-4">
+                <div className="text-xs text-gray-400 mb-4">
                   Created {new Date(cube.createdAt).toLocaleDateString()}
                 </div>
                 <button
                   onClick={() => router.push(`/data-cubes/${cube.id}`)}
-                  className="w-full bg-primary-50 text-primary-700 px-4 py-2 rounded-lg hover:bg-primary-100 flex items-center justify-center gap-2"
+                  className="w-full glass-strong px-4 py-2 rounded-lg text-white hover:glass-active transition-all flex items-center justify-center gap-2"
                 >
                   View Details
                   <ArrowRight className="w-4 h-4" />
@@ -179,13 +179,13 @@ function DataCubeModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold mb-4">Create AI Semitic Data Layer</h2>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+      <div className="glass-strong rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <h2 className="text-2xl font-bold mb-4 text-white">Create AI Semitic Data Layer</h2>
 
         <div className="space-y-4 mb-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Name
             </label>
             <input
@@ -194,11 +194,11 @@ function DataCubeModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Sales by Month"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-3 py-2 glass rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Description
             </label>
             <textarea
@@ -206,11 +206,11 @@ function DataCubeModal({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe your AI Semitic Data Layer..."
               rows={2}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full px-3 py-2 glass rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Query (Natural Language)
             </label>
             <textarea
@@ -218,16 +218,16 @@ function DataCubeModal({
               onChange={(e) => setQuery(e.target.value)}
               placeholder="e.g., Show me monthly sales totals grouped by month"
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent font-mono text-sm"
+              className="w-full px-3 py-2 glass rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-400 mt-1">
               Describe what data you want to see in natural language
             </p>
           </div>
           <button
             onClick={handleQuery}
             disabled={loading || !query.trim()}
-            className="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full glass px-4 py-2 rounded-lg text-white hover:glass-strong disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all"
           >
             <Search className="w-4 h-4" />
             {loading ? 'Processing...' : 'Preview Query'}
@@ -235,17 +235,17 @@ function DataCubeModal({
         </div>
 
         {preview && (
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <h3 className="text-sm font-medium text-gray-700 mb-3">
+          <div className="mb-6 p-4 glass rounded-lg">
+            <h3 className="text-sm font-medium text-white mb-3">
               Preview Results
             </h3>
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
                 <thead>
-                  <tr className="border-b">
+                  <tr className="border-b border-white/10">
                     {preview.data?.[0] &&
                       Object.keys(preview.data[0]).map((key) => (
-                        <th key={key} className="text-left py-2 px-3 font-medium">
+                        <th key={key} className="text-left py-2 px-3 font-medium text-white">
                           {key}
                         </th>
                       ))}
@@ -253,9 +253,9 @@ function DataCubeModal({
                 </thead>
                 <tbody>
                   {preview.data?.slice(0, 5).map((row: any, idx: number) => (
-                    <tr key={idx} className="border-b">
+                    <tr key={idx} className="border-b border-white/10">
                       {Object.values(row).map((val: any, i: number) => (
-                        <td key={i} className="py-2 px-3">
+                        <td key={i} className="py-2 px-3 text-gray-300">
                           {val}
                         </td>
                       ))}
@@ -267,17 +267,17 @@ function DataCubeModal({
           </div>
         )}
 
-        <div className="flex gap-3 pt-4 border-t">
+        <div className="flex gap-3 pt-4 border-t border-white/10">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="flex-1 px-4 py-2 glass rounded-lg text-white hover:glass-strong transition-all"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={!name.trim() || !query.trim()}
-            className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2 glass-strong text-white rounded-lg hover:glass-active disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             Create AI Semitic Data Layer
           </button>

@@ -56,7 +56,7 @@ export default function SchemaPage() {
   if (loading) {
     return (
       <Layout>
-        <div className="text-center py-12">Loading schema...</div>
+        <div className="text-center py-12 text-white">Loading schema...</div>
       </Layout>
     );
   }
@@ -66,15 +66,15 @@ export default function SchemaPage() {
       <div className="max-w-7xl mx-auto">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+          className="flex items-center gap-2 text-gray-300 hover:text-white mb-6"
         >
           <ArrowLeft className="w-5 h-5" />
           Back to Data Sources
         </button>
 
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Database Schema</h1>
-          <p className="text-gray-600 mt-1">
+        <div className="mb-6 glass rounded-xl p-6">
+          <h1 className="text-3xl font-bold text-white mb-2">Database Schema</h1>
+          <p className="text-gray-300 mt-1">
             View and edit table descriptions
           </p>
         </div>
@@ -83,14 +83,14 @@ export default function SchemaPage() {
           {tables.map((table) => (
             <div
               key={table.name}
-              className="bg-white rounded-lg shadow border border-gray-200 p-6"
+              className="glass rounded-xl p-6"
             >
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-900">
+                  <h2 className="text-xl font-semibold text-white">
                     {table.schema ? `${table.schema}.${table.name}` : table.name}
                   </h2>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-gray-400 mt-1">
                     {table.rowCount.toLocaleString()} rows
                   </p>
                 </div>
@@ -98,13 +98,13 @@ export default function SchemaPage() {
 
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium text-gray-700">
+                  <label className="text-sm font-medium text-gray-300">
                     Description
                   </label>
                   {editingTable !== table.name && (
                     <button
                       onClick={() => handleEditDescription(table)}
-                      className="text-primary-600 hover:text-primary-700 flex items-center gap-1 text-sm"
+                      className="text-blue-400 hover:text-blue-300 flex items-center gap-1 text-sm"
                     >
                       <Edit2 className="w-4 h-4" />
                       Edit
@@ -117,20 +117,20 @@ export default function SchemaPage() {
                       value={editedDescription}
                       onChange={(e) => setEditedDescription(e.target.value)}
                       rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2 glass rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Enter table description..."
                     />
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleSaveDescription(table.name)}
-                        className="px-3 py-1 bg-primary-600 text-white text-sm rounded hover:bg-primary-700 flex items-center gap-1"
+                        className="px-3 py-1 glass-strong text-white text-sm rounded hover:glass-active flex items-center gap-1 transition-all"
                       >
                         <Save className="w-4 h-4" />
                         Save
                       </button>
                       <button
                         onClick={handleCancelEdit}
-                        className="px-3 py-1 border border-gray-300 text-sm rounded hover:bg-gray-50 flex items-center gap-1"
+                        className="px-3 py-1 glass text-white text-sm rounded hover:glass-strong flex items-center gap-1 transition-all"
                       >
                         <X className="w-4 h-4" />
                         Cancel
@@ -138,70 +138,70 @@ export default function SchemaPage() {
                     </div>
                   </div>
                 ) : (
-                  <p className="text-gray-700 bg-gray-50 p-3 rounded">
+                  <p className="text-gray-300 glass-strong p-3 rounded">
                     {table.description || 'No description provided'}
                   </p>
                 )}
               </div>
 
               <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-3">
+                <h3 className="text-sm font-medium text-white mb-3">
                   Columns
                 </h3>
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                  <table className="min-w-full divide-y divide-white/10">
+                    <thead className="glass-strong">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase">
                           Name
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase">
                           Type
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase">
                           Primary Key
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase">
                           Foreign Key (Joins To)
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase">
                           Description
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="divide-y divide-white/10">
                       {table.columns.map((column) => (
                         <tr key={column.name}>
-                          <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                          <td className="px-4 py-3 text-sm font-medium text-white">
                             {column.name}
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-500">
+                          <td className="px-4 py-3 text-sm text-gray-300">
                             {column.type}
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-500">
+                          <td className="px-4 py-3 text-sm text-gray-300">
                             {column.primaryKey ? (
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30">
                                 PK
                               </span>
                             ) : (
-                              <span className="text-gray-400">-</span>
+                              <span className="text-gray-500">-</span>
                             )}
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-500">
+                          <td className="px-4 py-3 text-sm text-gray-300">
                             {column.foreignKey ? (
                               <div className="flex flex-col gap-1">
-                                <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
+                                <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-500/20 text-green-300 border border-green-500/30">
                                   → {column.foreignKey.referencedTable}
                                 </span>
-                                <span className="text-xs text-gray-500">
+                                <span className="text-xs text-gray-400">
                                   ({column.foreignKey.referencedColumn})
                                 </span>
                               </div>
                             ) : (
-                              <span className="text-gray-400">-</span>
+                              <span className="text-gray-500">-</span>
                             )}
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-500">
+                          <td className="px-4 py-3 text-sm text-gray-300">
                             {column.description || '-'}
                           </td>
                         </tr>
