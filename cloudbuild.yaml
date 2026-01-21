@@ -13,14 +13,18 @@ steps:
     args:
       - 'run'
       - 'deploy'
-      - 'YOUR-SERVICE-NAME' # CHANGE THIS
+      - 'YOUR-SERVICE-NAME' # Ensure this matches your desired service name
       - '--image'
       - 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/my-app:$COMMIT_SHA'
       - '--region'
-      - 'us-central1' # CHANGE THIS if needed
+      - 'us-central1'
       - '--platform'
       - 'managed'
-      - '--allow-unauthenticated' # Remove this if you want private access only
+      - '--allow-unauthenticated'
 
 images:
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/my-app:$COMMIT_SHA'
+
+# --- ADD THIS SECTION ---
+options:
+  logging: CLOUD_LOGGING_ONLY
