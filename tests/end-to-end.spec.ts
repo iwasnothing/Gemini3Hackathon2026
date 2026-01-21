@@ -6,6 +6,14 @@ test.describe('End-to-End Complete User Journey', () => {
     const helper = new TestHelper('Complete End-to-End Journey');
 
     await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.setItem('currentUser', JSON.stringify({
+        id: 'user-1',
+        email: 'admin@example.com',
+        name: 'Admin User',
+        role: 'admin'
+      }));
+    });
     await helper.captureStep(page, 'Application Home', 'Starting complete workflow from home page');
 
     // Step 1: Configure Data Source
@@ -30,9 +38,9 @@ test.describe('End-to-End Complete User Journey', () => {
     await helper.captureStep(page, 'Schema Exploration', 'Reviewing database structure');
 
     // Step 3: Create Data Cube
-    await page.click('text=Data Cubes');
+    await page.click('text=AI Semitic Data Layer');
     await page.waitForURL('**/data-cubes');
-    await page.click('text=Create Data Cube');
+    await page.click('text=Create AI Semitic Data Layer');
     await page.waitForSelector('.fixed.inset-0');
     await page.locator('.fixed.inset-0 input[type="text"]').fill('Revenue Analytics');
     await page.locator('.fixed.inset-0 textarea').first().fill('Quarterly revenue analysis');
@@ -41,7 +49,7 @@ test.describe('End-to-End Complete User Journey', () => {
     await page.waitForTimeout(2000);
     await helper.captureStep(page, 'Data Cube Query', 'Natural language query processed');
 
-    await page.locator('.fixed.inset-0 button:has-text("Create Data Cube")').click();
+    await page.locator('.fixed.inset-0 button:has-text("Create AI Semitic Data Layer")').click();
     await page.waitForURL('**/data-cubes');
     await helper.captureStep(page, 'Data Cube Created', 'Analytics cube ready for visualization');
 

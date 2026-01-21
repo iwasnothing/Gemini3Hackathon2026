@@ -34,7 +34,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-playwright-report
-test-results
-tests/screenshots
-tests/reports
+# Test artifacts
+/tests/screenshots/
+/tests/reports/
+/playwright-report/
+/test-results/
+/playwright/.cache/

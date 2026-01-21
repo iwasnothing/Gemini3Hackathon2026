@@ -6,13 +6,21 @@ test.describe('Data Cube Creation Journey', () => {
     const helper = new TestHelper('Data Cube Creation Journey');
 
     await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.setItem('currentUser', JSON.stringify({
+        id: 'user-1',
+        email: 'admin@example.com',
+        name: 'Admin User',
+        role: 'admin'
+      }));
+    });
     await helper.captureStep(page, 'Home Page', 'Starting from the home page');
 
-    await page.click('text=Data Cubes');
+    await page.click('text=AI Semitic Data Layer');
     await page.waitForURL('**/data-cubes');
     await helper.captureStep(page, 'Data Cubes List', 'Viewing existing data cubes');
 
-    await page.click('text=Create Data Cube');
+    await page.click('text=Create AI Semitic Data Layer');
     await page.waitForSelector('.fixed.inset-0');
     await helper.captureStep(page, 'Create Data Cube Page', 'Opening data cube creation interface');
 
@@ -28,7 +36,7 @@ test.describe('Data Cube Creation Journey', () => {
     await page.waitForTimeout(2000);
     await helper.captureStep(page, 'Query Preview', 'Previewing the generated SQL and sample results');
 
-    await page.locator('.fixed.inset-0 button:has-text("Create Data Cube")').click();
+    await page.locator('.fixed.inset-0 button:has-text("Create AI Semitic Data Layer")').click();
     await page.waitForURL('**/data-cubes');
     await helper.captureStep(page, 'Data Cube Created', 'Successfully created and saved the data cube');
 

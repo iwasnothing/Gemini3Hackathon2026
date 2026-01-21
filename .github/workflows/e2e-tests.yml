@@ -1,10 +1,9 @@
 name: E2E Test Automation
 
+# Disabled: Tests are for documentation only, not CI/CD
+# Project is undergoing rapid development with frequent UI changes
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
+  workflow_dispatch:
 
 jobs:
   test:

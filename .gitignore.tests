@@ -1,6 +1,0 @@
-# Test artifacts
-/tests/screenshots/
-/tests/reports/
-/playwright-report/
-/test-results/
-/playwright/.cache/

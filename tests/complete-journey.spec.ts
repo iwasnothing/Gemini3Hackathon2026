@@ -5,6 +5,17 @@ test.describe('Application User Journeys', () => {
   test('complete application walkthrough with screenshots', async ({ page }) => {
     const helper = new TestHelper('Complete Application Walkthrough');
 
+    // Setup user context
+    await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.setItem('currentUser', JSON.stringify({
+        id: 'user-1',
+        email: 'admin@example.com',
+        name: 'Admin User',
+        role: 'admin'
+      }));
+    });
+
     // Home Page
     await page.goto('/');
     await page.waitForLoadState('networkidle');
@@ -40,12 +51,12 @@ test.describe('Application User Journeys', () => {
     await helper.captureStep(page, 'Database Schema View', 'Exploring tables and columns');
 
     // Data Cubes Journey
-    await page.click('text=Data Cubes');
+    await page.click('text=AI Semitic Data Layer');
     await page.waitForURL('**/data-cubes');
     await page.waitForLoadState('networkidle');
     await helper.captureStep(page, 'Data Cubes List', 'View all data cubes');
 
-    await page.click('text=Create Data Cube');
+    await page.click('text=Create AI Semitic Data Layer');
     await page.waitForSelector('.fixed.inset-0');
     await helper.captureStep(page, 'Create Data Cube Modal', 'Natural language query interface');
 
@@ -58,7 +69,7 @@ test.describe('Application User Journeys', () => {
     await page.waitForTimeout(1500);
     await helper.captureStep(page, 'Query Preview', 'Preview of query results');
 
-    await page.locator('.fixed.inset-0 button:has-text(\"Create Data Cube\")').click();
+    await page.locator('.fixed.inset-0 button:has-text(\"Create AI Semitic Data Layer\")').click();
     await page.waitForURL('**/data-cubes');
     await page.waitForLoadState('networkidle');
     await helper.captureStep(page, 'Data Cube Created', 'New data cube saved');
