@@ -8,9 +8,9 @@ import { useUser } from '@/contexts/UserContext';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { name: 'New Dashboard', href: '/new-dashboard', icon: Sparkles },
+  { name: 'Insight Exploration', href: '/new-dashboard', icon: Sparkles },
   { name: 'Analytics', href: '/dashboards', icon: BarChart3 },
-  { name: 'Reports', href: '/data-cubes', icon: FileText },
+  { name: 'Report MarketPlace', href: '/data-cubes', icon: FileText },
   { name: 'Settings', href: '/data-sources', icon: Settings },
   { name: 'Data Marketplace', href: '/data-marketplace', icon: Store },
   { name: 'Data Entitlement', href: '/data-entitlement', icon: Shield },
@@ -27,7 +27,7 @@ export default function Sidebar() {
         <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center border border-white/30">
           <span className="text-xl font-bold text-white">S</span>
         </div>
-        <span className="text-lg font-semibold text-white">SaaS Co.</span>
+        <span className="text-lg font-semibold text-white">My Insight Canvas</span>
       </div>
 
       {/* Navigation */}
@@ -60,7 +60,7 @@ export default function Sidebar() {
       <div className="mt-auto pt-4 border-t border-white/10">
         <div className="flex items-center gap-2 px-4 py-2 text-sm text-gray-300">
           <LogOut className="w-4 h-4" />
-          <span>SaaS Co.</span>
+          <span>My Insight Canvas</span>
         </div>
       </div>
     </div>

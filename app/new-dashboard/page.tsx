@@ -326,10 +326,10 @@ export default function NewDashboardPage() {
                 <h1 className="text-4xl font-bold text-white mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                   Create Your Dashboard
                 </h1>
-                <p className="text-gray-300 text-xl mb-2">
+                <p className="text-white text-xl mb-2">
                   Describe what you'd like to visualize
                 </p>
-                <p className="text-gray-400 text-base">
+                <p className="text-white text-base">
                   I'll build an interactive dashboard for you
                 </p>
               </div>
@@ -340,7 +340,7 @@ export default function NewDashboardPage() {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="e.g., Create a sales dashboard with revenue trends, monthly breakdowns, and product performance metrics..."
-                  className="w-full px-6 py-5 pr-16 text-lg text-white glass rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 resize-none placeholder:text-gray-500 transition-all shadow-xl"
+                  className="w-full px-6 py-5 pr-16 text-lg text-white glass rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 resize-none placeholder:text-white transition-all shadow-xl"
                   rows={5}
                 />
                 <button
@@ -387,7 +387,7 @@ export default function NewDashboardPage() {
                   <Sparkles className="w-5 h-5 text-blue-400" />
                   Chat Assistant
                 </h2>
-                <p className="text-xs text-gray-400 mt-1">Ask me to modify your dashboard</p>
+                <p className="text-xs text-white mt-1">Ask me to modify your dashboard</p>
               </div>
               <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
                 {messages.map((message, index) => (
@@ -405,7 +405,7 @@ export default function NewDashboardPage() {
                     >
                       <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
                       <p className={`text-xs mt-2 ${
-                        message.role === 'user' ? 'text-gray-300' : 'text-gray-400'
+                        message.role === 'user' ? 'text-white' : 'text-white'
                       }`}>
                         {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
@@ -431,7 +431,7 @@ export default function NewDashboardPage() {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Ask me to modify the dashboard..."
-                    className="w-full px-4 py-3 pr-12 text-sm glass rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 resize-none transition-all"
+                    className="w-full px-4 py-3 pr-12 text-sm glass rounded-xl text-white placeholder:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 resize-none transition-all"
                     rows={2}
                   />
                   <button
@@ -456,7 +456,7 @@ export default function NewDashboardPage() {
                   <h2 className="text-2xl font-bold text-white mb-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                     {dashboard?.name || 'Dashboard Preview'}
                   </h2>
-                  <p className="text-gray-300">
+                  <p className="text-white">
                     {dashboard?.description || 'Your dashboard will appear here'}
                   </p>
                 </div>
@@ -572,9 +572,9 @@ export default function NewDashboardPage() {
                               <tbody>
                                 {[1, 2, 3, 4, 5].map((i) => (
                                   <tr key={i} className="border-b border-white/10">
-                                    <td className="py-2 px-4 text-gray-300">Row {i} Col 1</td>
-                                    <td className="py-2 px-4 text-gray-300">Row {i} Col 2</td>
-                                    <td className="py-2 px-4 text-gray-300">Row {i} Col 3</td>
+                                    <td className="py-2 px-4 text-white">Row {i} Col 1</td>
+                                    <td className="py-2 px-4 text-white">Row {i} Col 2</td>
+                                    <td className="py-2 px-4 text-white">Row {i} Col 3</td>
                                   </tr>
                                 ))}
                               </tbody>
@@ -589,7 +589,7 @@ export default function NewDashboardPage() {
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full glass-strong mb-4">
                       <Sparkles className="w-8 h-8 text-blue-400" />
                     </div>
-                    <p className="text-gray-400 text-lg">Waiting for dashboard description...</p>
+                    <p className="text-white text-lg">Waiting for dashboard description...</p>
                   </div>
                 )}
               </div>
