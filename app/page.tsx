@@ -41,10 +41,10 @@ export default function Home() {
         <div className="glass rounded-xl p-6 mb-6">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-4xl font-bold text-white mb-2">
+              <h1 className="text-4xl font-bold text-green-400 mb-2">
                 Analytics Dashboard
               </h1>
-              <p className="text-gray-300 text-lg">
+              <p className="text-yellow-400 text-lg">
                 High-fidelity desktop UI design for SaaS Analytics Dashboard
               </p>
             </div>
@@ -58,9 +58,9 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           {/* Total Users */}
           <div className="glass rounded-xl p-6">
-            <p className="text-gray-300 text-sm mb-2">Total Users</p>
+            <p className="text-yellow-400 text-sm mb-2">Total Users</p>
             <p className="text-4xl font-bold text-white mb-1">2,300</p>
-            <p className="text-gray-400 text-xs mb-2">Total Users</p>
+            <p className="text-yellow-400 text-xs mb-2">Total Users</p>
             <div className="flex items-center gap-1 text-green-400 text-sm">
               <TrendingUp className="w-4 h-4" />
               <span>32.56%</span>
@@ -69,9 +69,9 @@ export default function Home() {
 
           {/* Revenue */}
           <div className="glass rounded-xl p-6">
-            <p className="text-gray-300 text-sm mb-2">Revenue</p>
+            <p className="text-yellow-400 text-sm mb-2">Revenue</p>
             <p className="text-4xl font-bold text-white mb-1">$298.6K</p>
-            <p className="text-gray-400 text-xs mb-2">Today</p>
+            <p className="text-yellow-400 text-xs mb-2">Today</p>
             <div className="flex items-center gap-1 text-green-400 text-sm">
               <TrendingUp className="w-4 h-4" />
               <span>33.33%</span>
@@ -80,9 +80,9 @@ export default function Home() {
 
           {/* Conversion Rate */}
           <div className="glass rounded-xl p-6">
-            <p className="text-gray-300 text-sm mb-2">Conversion Rate</p>
+            <p className="text-yellow-400 text-sm mb-2">Conversion Rate</p>
             <p className="text-4xl font-bold text-white mb-1">0.36%</p>
-            <p className="text-gray-400 text-xs mb-2">Average</p>
+            <p className="text-yellow-400 text-xs mb-2">Average</p>
             <div className="flex items-center gap-1 text-green-400 text-sm">
               <TrendingUp className="w-4 h-4" />
               <span>0.66%</span>
@@ -91,9 +91,9 @@ export default function Home() {
 
           {/* Active Now */}
           <div className="glass rounded-xl p-6">
-            <p className="text-gray-300 text-sm mb-2">Active Now</p>
+            <p className="text-yellow-400 text-sm mb-2">Active Now</p>
             <p className="text-4xl font-bold text-white mb-1">34</p>
-            <div className="flex items-center gap-2 text-gray-400 text-xs">
+            <div className="flex items-center gap-2 text-yellow-400 text-xs">
               <div className="w-2 h-2 rounded-full bg-green-400"></div>
               <span>Active Now</span>
             </div>
@@ -104,15 +104,15 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* User Growth Chart */}
           <div className="lg:col-span-2 glass rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">User Growth</h3>
+            <h3 className="text-lg font-semibold text-green-400 mb-4">User Growth</h3>
             <div className="flex items-center gap-4 mb-4 text-sm">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                <span className="text-gray-300">User</span>
+                <span className="text-yellow-400">User</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 border-t-2 border-gray-500"></div>
-                <span className="text-gray-500">Weekly</span>
+                <div className="w-3 h-3 border-t-2 border-yellow-500"></div>
+                <span className="text-yellow-400">Weekly</span>
               </div>
             </div>
             <ResponsiveContainer width="100%" height={300}>
@@ -161,22 +161,22 @@ export default function Home() {
 
           {/* Global Sales */}
           <div className="glass rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Global Sales</h3>
+            <h3 className="text-lg font-semibold text-green-400 mb-4">Global Sales</h3>
             <div className="h-[300px] flex items-center justify-center">
-              <div className="text-gray-400 text-sm">World Map Visualization</div>
+              <div className="text-yellow-400 text-sm">World Map Visualization</div>
             </div>
           </div>
         </div>
 
         {/* Top Performing Pages */}
         <div className="mt-6 glass rounded-xl p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Top Performing Pages</h3>
+          <h3 className="text-lg font-semibold text-green-400 mb-4">Top Performing Pages</h3>
           <div className="space-y-4">
             {topPages.map((page, index) => (
               <div key={index} className="flex items-center justify-between">
-                <span className="text-gray-300 text-sm">{page.name}</span>
+                <span className="text-yellow-400 text-sm">{page.name}</span>
                 <div className="flex items-center gap-3 flex-1 mx-4">
-                  <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div className="flex-1 h-2 bg-black/30 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
                       style={{ width: `${Math.min(page.percentage, 100)}%` }}

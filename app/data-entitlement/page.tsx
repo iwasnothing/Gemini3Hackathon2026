@@ -83,13 +83,13 @@ export default function DataEntitlementPage() {
         <div className="mb-6 glass rounded-xl p-6">
           <div className="flex items-center gap-3 mb-2">
             <Shield className="w-8 h-8 text-blue-400" />
-            <h1 className="text-3xl font-bold text-white">Data Entitlement</h1>
+            <h1 className="text-3xl font-bold text-green-400">Data Entitlement</h1>
           </div>
-          <p className="text-gray-300 mt-1">
+          <p className="text-yellow-400 mt-1">
             View your data access permissions and entitlements
           </p>
           {user && (
-            <div className="mt-3 text-sm text-gray-400">
+            <div className="mt-3 text-sm text-yellow-400">
               Logged in as: <span className="font-semibold text-white">{user.name}</span> ({user.email}) - Role: <span className="font-semibold text-white">{user.role}</span>
             </div>
           )}
@@ -97,9 +97,9 @@ export default function DataEntitlementPage() {
 
         {entitledResources.length === 0 ? (
           <div className="glass rounded-xl p-12 text-center">
-            <Shield className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-white mb-2">No Entitlements Found</h3>
-            <p className="text-gray-300">
+            <Shield className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-green-400 mb-2">No Entitlements Found</h3>
+            <p className="text-yellow-400">
               You don't have access to any resources at this time.
             </p>
           </div>
@@ -108,7 +108,7 @@ export default function DataEntitlementPage() {
             {/* Data Sources */}
             {grouped.dataSource.length > 0 && (
               <div>
-                <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <h2 className="text-xl font-semibold text-green-400 mb-4 flex items-center gap-2">
                   <Database className="w-6 h-6 text-blue-400" />
                   Data Sources ({grouped.dataSource.length})
                 </h2>
@@ -121,13 +121,13 @@ export default function DataEntitlementPage() {
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
                           {getResourceIcon(resource.resourceType)}
-                          <h3 className="text-lg font-semibold text-white">
+                          <h3 className="text-lg font-semibold text-green-400">
                             {resource.resourceName}
                           </h3>
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <div className="text-sm text-gray-400">Permissions:</div>
+                        <div className="text-sm text-yellow-400">Permissions:</div>
                         <div className="flex flex-wrap gap-2">
                           {resource.permissions.map((perm) => (
                             <div
@@ -139,7 +139,7 @@ export default function DataEntitlementPage() {
                             </div>
                           ))}
                         </div>
-                        <div className="text-xs text-gray-400 mt-3">
+                        <div className="text-xs text-yellow-400 mt-3">
                           Granted: {new Date(resource.grantedAt).toLocaleDateString()}
                         </div>
                       </div>
@@ -152,7 +152,7 @@ export default function DataEntitlementPage() {
             {/* Data Cubes */}
             {grouped.dataCube.length > 0 && (
               <div>
-                <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <h2 className="text-xl font-semibold text-green-400 mb-4 flex items-center gap-2">
                   <Box className="w-6 h-6 text-blue-400" />
                   AI Semitic Data Layers ({grouped.dataCube.length})
                 </h2>
@@ -165,13 +165,13 @@ export default function DataEntitlementPage() {
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
                           {getResourceIcon(resource.resourceType)}
-                          <h3 className="text-lg font-semibold text-white">
+                          <h3 className="text-lg font-semibold text-green-400">
                             {resource.resourceName}
                           </h3>
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <div className="text-sm text-gray-400">Permissions:</div>
+                        <div className="text-sm text-yellow-400">Permissions:</div>
                         <div className="flex flex-wrap gap-2">
                           {resource.permissions.map((perm) => (
                             <div
@@ -183,7 +183,7 @@ export default function DataEntitlementPage() {
                             </div>
                           ))}
                         </div>
-                        <div className="text-xs text-gray-400 mt-3">
+                        <div className="text-xs text-yellow-400 mt-3">
                           Granted: {new Date(resource.grantedAt).toLocaleDateString()}
                         </div>
                       </div>
@@ -196,7 +196,7 @@ export default function DataEntitlementPage() {
             {/* Dashboards */}
             {grouped.dashboard.length > 0 && (
               <div>
-                <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <h2 className="text-xl font-semibold text-green-400 mb-4 flex items-center gap-2">
                   <LayoutDashboard className="w-6 h-6 text-blue-400" />
                   Dashboards ({grouped.dashboard.length})
                 </h2>
@@ -209,13 +209,13 @@ export default function DataEntitlementPage() {
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
                           {getResourceIcon(resource.resourceType)}
-                          <h3 className="text-lg font-semibold text-white">
+                          <h3 className="text-lg font-semibold text-green-400">
                             {resource.resourceName}
                           </h3>
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <div className="text-sm text-gray-400">Permissions:</div>
+                        <div className="text-sm text-yellow-400">Permissions:</div>
                         <div className="flex flex-wrap gap-2">
                           {resource.permissions.map((perm) => (
                             <div
@@ -227,7 +227,7 @@ export default function DataEntitlementPage() {
                             </div>
                           ))}
                         </div>
-                        <div className="text-xs text-gray-400 mt-3">
+                        <div className="text-xs text-yellow-400 mt-3">
                           Granted: {new Date(resource.grantedAt).toLocaleDateString()}
                         </div>
                       </div>

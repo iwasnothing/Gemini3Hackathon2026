@@ -323,7 +323,7 @@ export default function NewDashboardPage() {
                 <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl glass-strong mb-6 shadow-lg">
                   <Sparkles className="w-10 h-10 text-blue-400" />
                 </div>
-                <h1 className="text-4xl font-bold text-white mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                <h1 className="text-4xl font-bold text-green-400 mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                   Create Your Dashboard
                 </h1>
                 <p className="text-white text-xl mb-2">
@@ -358,19 +358,19 @@ export default function NewDashboardPage() {
               <div className="mt-6 flex flex-wrap gap-3 justify-center">
                 <button
                   onClick={() => setInput('Create a sales dashboard with revenue trends and monthly breakdowns')}
-                  className="px-4 py-2 text-sm glass rounded-lg text-gray-300 hover:glass-strong hover:text-white transition-all"
+                  className="px-4 py-2 text-sm glass rounded-lg text-yellow-400 hover:glass-strong hover:text-white transition-all"
                 >
                   Sales Dashboard
                 </button>
                 <button
                   onClick={() => setInput('Create a user analytics dashboard showing growth and engagement metrics')}
-                  className="px-4 py-2 text-sm glass rounded-lg text-gray-300 hover:glass-strong hover:text-white transition-all"
+                  className="px-4 py-2 text-sm glass rounded-lg text-yellow-400 hover:glass-strong hover:text-white transition-all"
                 >
                   User Analytics
                 </button>
                 <button
                   onClick={() => setInput('Create a financial dashboard with profit/loss trends and expense breakdowns')}
-                  className="px-4 py-2 text-sm glass rounded-lg text-gray-300 hover:glass-strong hover:text-white transition-all"
+                  className="px-4 py-2 text-sm glass rounded-lg text-yellow-400 hover:glass-strong hover:text-white transition-all"
                 >
                   Financial Dashboard
                 </button>
@@ -382,8 +382,8 @@ export default function NewDashboardPage() {
           <div className="flex-1 flex gap-4 overflow-hidden p-4">
             {/* Chat Panel - Left */}
             <div className="w-[420px] flex flex-col glass rounded-2xl overflow-hidden shadow-xl border border-white/10">
-              <div className="p-5 border-b border-white/10 bg-white/5">
-                <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+              <div className="p-5 border-b border-white/10 bg-black/20">
+                <h2 className="text-lg font-semibold text-green-400 flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-blue-400" />
                   Chat Assistant
                 </h2>
@@ -424,7 +424,7 @@ export default function NewDashboardPage() {
                 )}
                 <div ref={messagesEndRef} />
               </div>
-              <div className="p-4 border-t border-white/10 bg-white/5">
+              <div className="p-4 border-t border-white/10 bg-black/20">
                 <div className="relative">
                   <textarea
                     value={input}
@@ -453,7 +453,7 @@ export default function NewDashboardPage() {
             <div className="flex-1 overflow-y-auto rounded-2xl">
               <div className="h-full p-6">
                 <div className="mb-6 glass rounded-2xl p-6 shadow-xl border border-white/10">
-                  <h2 className="text-2xl font-bold text-white mb-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  <h2 className="text-2xl font-bold text-green-400 mb-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                     {dashboard?.name || 'Dashboard Preview'}
                   </h2>
                   <p className="text-white">
@@ -472,7 +472,7 @@ export default function NewDashboardPage() {
                           animationDelay: `${index * 0.1}s`,
                         }}
                       >
-                        <h3 className="text-lg font-semibold text-white mb-4">
+                        <h3 className="text-lg font-semibold text-green-400 mb-4">
                           {widget.title}
                         </h3>
                         {widget.type === 'metric' && (

@@ -85,10 +85,10 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-start mb-6">
           <div className="glass rounded-xl p-6 flex-1">
-            <h1 className="text-3xl font-bold text-white mb-2">
+            <h1 className="text-3xl font-bold text-green-400 mb-2">
               {dashboard.name}
             </h1>
-            <p className="text-gray-300 mt-1">{dashboard.description}</p>
+            <p className="text-yellow-400 mt-1">{dashboard.description}</p>
           </div>
           <button
             onClick={() => setShowAIAssistant(!showAIAssistant)}
@@ -108,7 +108,7 @@ export default function DashboardPage() {
                 gridColumn: widget.width === 8 ? 'span 2' : 'span 1',
               }}
             >
-              <h3 className="text-lg font-semibold text-white mb-4">
+              <h3 className="text-lg font-semibold text-green-400 mb-4">
                 {widget.title}
               </h3>
               {widget.type === 'metric' && (
@@ -207,7 +207,7 @@ export default function DashboardPage() {
           ))}
 
           {dashboard.widgets.length === 0 && (
-            <div className="col-span-3 text-center py-12 text-gray-400 glass rounded-xl">
+            <div className="col-span-3 text-center py-12 text-yellow-400 glass rounded-xl">
               No widgets added yet. Add widgets to visualize your data.
             </div>
           )}
@@ -280,7 +280,7 @@ function AIAssistant({ dashboardId }: { dashboardId: string }) {
 
   return (
     <div className="glass rounded-xl p-6 mt-6">
-      <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+      <h2 className="text-xl font-bold text-green-400 mb-4 flex items-center gap-2">
         <MessageCircle className="w-5 h-5 text-blue-400" />
         AI Assistant
       </h2>
@@ -303,8 +303,8 @@ function AIAssistant({ dashboardId }: { dashboardId: string }) {
               <p
                 className={`text-xs mt-1 ${
                   message.role === 'user'
-                    ? 'text-gray-300'
-                    : 'text-gray-400'
+                    ? 'text-yellow-400'
+                    : 'text-yellow-400'
                 }`}
               >
                 {new Date(message.timestamp).toLocaleTimeString()}

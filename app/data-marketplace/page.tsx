@@ -3,12 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Layout from '@/components/Layout';
-import { DataSource, Table, DataCube, Dashboard } from '@/lib/types';
+import { DataSource, Table, DataCube } from '@/lib/types';
 import { useUser } from '@/contexts/UserContext';
 import { 
   Database, 
   Box, 
-  LayoutDashboard, 
   Table as TableIcon,
   Search,
   Filter,
@@ -26,7 +25,6 @@ interface DataSourceWithTables extends DataSource {
 interface MarketplaceData {
   dataSources: DataSourceWithTables[];
   dataCubes: DataCube[];
-  dashboards: Dashboard[];
 }
 
 export default function DataMarketplacePage() {
@@ -35,7 +33,7 @@ export default function DataMarketplacePage() {
   const [marketplaceData, setMarketplaceData] = useState<MarketplaceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'sources' | 'cubes' | 'dashboards'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<'all' | 'sources' | 'cubes'>('all');
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
@@ -67,14 +65,39 @@ export default function DataMarketplacePage() {
       case 'connected':
         return <CheckCircle2 className="w-4 h-4 text-green-500" />;
       case 'disconnected':
-        return <XCircle className="w-4 h-4 text-gray-400" />;
+        return <XCircle className="w-4 h-4 text-yellow-400" />;
       case 'error':
         return <AlertCircle className="w-4 h-4 text-red-500" />;
     }
   };
 
+  // Helper function to get key columns with PK/FK info
+  const getKeyColumns = (tables: Table[]) => {
+    const keyColumns: Array<{ name: string; type: string; isPK: boolean; isFK: boolean; fkReference?: string }> = [];
+    tables.forEach((table) => {
+      table.columns.forEach((col) => {
+        if (col.primaryKey || col.foreignKey) {
+          keyColumns.push({
+            name: `${table.name}.${col.name}`,
+            type: col.type,
+            isPK: col.primaryKey || false,
+            isFK: !!col.foreignKey,
+            fkReference: col.foreignKey ? `${col.foreignKey.referencedTable}.${col.foreignKey.referencedColumn}` : undefined,
+          });
+        }
+      });
+    });
+    return keyColumns;
+  };
+
+  // Helper function to get related data cubes (insights/reports)
+  const getRelatedInsights = (sourceId: string) => {
+    if (!marketplaceData) return [];
+    return marketplaceData.dataCubes.filter((cube) => cube.dataSourceId === sourceId);
+  };
+
   const filterData = () => {
-    if (!marketplaceData) return { sources: [], cubes: [], dashboards: [] };
+    if (!marketplaceData) return { sources: [], cubes: [] };
 
     const query = searchQuery.toLowerCase();
     
@@ -94,16 +117,9 @@ export default function DataMarketplacePage() {
         cube.description.toLowerCase().includes(query)
     );
 
-    const filteredDashboards = marketplaceData.dashboards.filter(
-      (dashboard) =>
-        dashboard.name.toLowerCase().includes(query) ||
-        dashboard.description.toLowerCase().includes(query)
-    );
-
     return {
       sources: filteredSources,
       cubes: filteredCubes,
-      dashboards: filteredDashboards,
     };
   };
 
@@ -111,8 +127,7 @@ export default function DataMarketplacePage() {
 
   const totalItems = 
     (selectedCategory === 'all' || selectedCategory === 'sources' ? filteredData.sources.length : 0) +
-    (selectedCategory === 'all' || selectedCategory === 'cubes' ? filteredData.cubes.length : 0) +
-    (selectedCategory === 'all' || selectedCategory === 'dashboards' ? filteredData.dashboards.length : 0);
+    (selectedCategory === 'all' || selectedCategory === 'cubes' ? filteredData.cubes.length : 0);
 
   if (loading) {
     return (
@@ -130,9 +145,9 @@ export default function DataMarketplacePage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div className="glass rounded-xl p-6 flex-1">
-            <h1 className="text-3xl font-bold text-white mb-2">Data Marketplace</h1>
-            <p className="text-gray-300 mt-1">
-              Browse and discover all available data sources, data cubes, and dashboards
+            <h1 className="text-3xl font-bold text-green-400 mb-2">Data Marketplace</h1>
+            <p className="text-yellow-400 mt-1">
+              Browse and discover all available data layers and semantic layers
             </p>
           </div>
           <button
@@ -147,24 +162,23 @@ export default function DataMarketplacePage() {
         {/* Search and Filters */}
         <div className="mb-6 space-y-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 z-10" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-yellow-400 w-5 h-5 z-10" />
             <input
               type="text"
-              placeholder="Search data sources, tables, cubes, or dashboards..."
+              placeholder="Search data layers, tables, or cubes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 glass rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-10 pr-4 py-3 glass rounded-lg text-white placeholder:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           
           <div className="flex items-center gap-4 glass rounded-xl p-4">
-            <Filter className="w-5 h-5 text-gray-300" />
+            <Filter className="w-5 h-5 text-yellow-400" />
             <div className="flex gap-2">
               {[
                 { value: 'all', label: 'All' },
-                { value: 'sources', label: 'Data Sources' },
-                { value: 'cubes', label: 'Data Cubes' },
-                { value: 'dashboards', label: 'Dashboards' },
+                { value: 'sources', label: 'Data Layer' },
+                { value: 'cubes', label: 'Semantic Layer' },
               ].map((category) => (
                 <button
                   key={category.value}
@@ -172,26 +186,26 @@ export default function DataMarketplacePage() {
                   className={`px-4 py-2 rounded-lg font-medium transition-all ${
                     selectedCategory === category.value
                       ? 'glass-active text-white'
-                      : 'glass text-gray-300 hover:glass-strong hover:text-white'
+                      : 'glass text-yellow-400 hover:glass-strong hover:text-white'
                   }`}
                 >
                   {category.label}
                 </button>
               ))}
             </div>
-            <div className="ml-auto text-sm text-gray-300">
+            <div className="ml-auto text-sm text-yellow-400">
               {totalItems} {totalItems === 1 ? 'item' : 'items'} found
             </div>
           </div>
         </div>
 
-        {/* Data Sources Section */}
+        {/* Data Layer Section */}
         {(selectedCategory === 'all' || selectedCategory === 'sources') && filteredData.sources.length > 0 && (
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
               <Database className="w-6 h-6 text-blue-400" />
-              <h2 className="text-2xl font-semibold text-white">Data Sources</h2>
-              <span className="text-sm text-gray-400">({filteredData.sources.length})</span>
+              <h2 className="text-2xl font-semibold text-green-400">Data Layer</h2>
+              <span className="text-sm text-white">({filteredData.sources.length})</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredData.sources.map((source) => (
@@ -202,7 +216,7 @@ export default function DataMarketplacePage() {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-2">
                       {getStatusIcon(source.status)}
-                      <h3 className="text-lg font-semibold text-white">{source.name}</h3>
+                      <h3 className="text-lg font-semibold text-green-400">{source.name}</h3>
                     </div>
                     <span className="text-xs font-medium px-2 py-1 bg-blue-500/20 text-blue-300 rounded border border-blue-500/30">
                       {source.type.toUpperCase()}
@@ -213,61 +227,122 @@ export default function DataMarketplacePage() {
                     {source.type === 'bigquery' ? (
                       <>
                         <div className="text-sm">
-                          <span className="text-gray-400">Project:</span>{' '}
+                          <span className="text-yellow-400">Project:</span>{' '}
                           <span className="text-white">{source.projectId || source.host}</span>
                         </div>
                         <div className="text-sm">
-                          <span className="text-gray-400">Dataset:</span>{' '}
+                          <span className="text-yellow-400">Dataset:</span>{' '}
                           <span className="text-white">{source.dataset || source.database}</span>
                         </div>
                       </>
                     ) : (
                       <>
                         <div className="text-sm">
-                          <span className="text-gray-400">Host:</span>{' '}
+                          <span className="text-yellow-400">Host:</span>{' '}
                           <span className="text-white">{source.host}</span>
                         </div>
                         <div className="text-sm">
-                          <span className="text-gray-400">Database:</span>{' '}
+                          <span className="text-yellow-400">Database:</span>{' '}
                           <span className="text-white">{source.database}</span>
                         </div>
                       </>
                     )}
                   </div>
 
-                  <div className="border-t border-white/10 pt-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-white">Tables</span>
-                      <span className="text-sm text-gray-400">{source.tables.length}</span>
+                  <div className="border-t border-white/10 pt-4 space-y-4">
+                    {/* 1. Dataset Purpose and Source */}
+                    <div>
+                      <div className="text-xs font-medium text-yellow-400 mb-2">Dataset Purpose & Source</div>
+                      <div className="text-sm text-white">
+                        <div className="mb-1">
+                          <span className="text-yellow-400">Purpose:</span>{' '}
+                          <span>Analytical dataset for {source.name.toLowerCase()} operations and reporting</span>
+                        </div>
+                        <div>
+                          <span className="text-yellow-400">Source:</span>{' '}
+                          <span>
+                            {source.type === 'bigquery' 
+                              ? `${source.projectId || source.host}.${source.dataset || source.database}`
+                              : `${source.host}/${source.database}`
+                            }
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="space-y-2 max-h-40 overflow-y-auto">
-                      {source.tables.map((table) => (
-                        <div
-                          key={table.name}
-                          className="flex items-center justify-between p-2 glass rounded hover:glass-strong transition-all"
-                        >
-                          <div className="flex items-center gap-2 flex-1 min-w-0">
-                            <TableIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                            <div className="min-w-0 flex-1">
-                              <div className="text-sm font-medium text-white truncate">
-                                {table.name}
+
+                    {/* 2. Key Reports/Insights */}
+                    {(() => {
+                      const relatedInsights = getRelatedInsights(source.id);
+                      return relatedInsights.length > 0 ? (
+                        <div>
+                          <div className="text-xs font-medium text-yellow-400 mb-2">Key Reports & Insights</div>
+                          <div className="space-y-1">
+                            {relatedInsights.slice(0, 3).map((insight) => (
+                              <div key={insight.id} className="text-sm text-white flex items-center gap-2">
+                                <Box className="w-3 h-3 text-blue-400 flex-shrink-0" />
+                                <span className="truncate">{insight.name}</span>
                               </div>
-                              {table.description && (
-                                <div className="text-xs text-gray-400 truncate">
-                                  {table.description}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <div className="text-xs text-gray-400 ml-2 flex-shrink-0">
-                            {table.rowCount.toLocaleString()} rows
+                            ))}
+                            {relatedInsights.length > 3 && (
+                              <div className="text-xs text-yellow-400">
+                                +{relatedInsights.length - 3} more
+                              </div>
+                            )}
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      ) : (
+                        <div>
+                          <div className="text-xs font-medium text-yellow-400 mb-2">Key Reports & Insights</div>
+                          <div className="text-sm text-white">No insights available yet</div>
+                        </div>
+                      );
+                    })()}
+
+                    {/* 3. Key Columns with PK/FK */}
+                    {(() => {
+                      const keyColumns = getKeyColumns(source.tables);
+                      return keyColumns.length > 0 ? (
+                        <div>
+                          <div className="text-xs font-medium text-yellow-400 mb-2">Key Columns (PK/FK)</div>
+                          <div className="space-y-1 max-h-32 overflow-y-auto">
+                            {keyColumns.slice(0, 5).map((col, idx) => (
+                              <div key={idx} className="text-xs text-white flex items-center gap-2">
+                                <span className="font-mono">{col.name}</span>
+                                {col.isPK && (
+                                  <span className="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 rounded text-[10px] border border-blue-500/30">
+                                    PK
+                                  </span>
+                                )}
+                                {col.isFK && (
+                                  <span className="px-1.5 py-0.5 bg-green-500/20 text-green-300 rounded text-[10px] border border-green-500/30">
+                                    FK
+                                  </span>
+                                )}
+                                {col.fkReference && (
+                                  <span className="text-yellow-400 text-[10px] truncate">
+                                    → {col.fkReference}
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                            {keyColumns.length > 5 && (
+                              <div className="text-xs text-yellow-400">
+                                +{keyColumns.length - 5} more columns
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="text-xs font-medium text-yellow-400 mb-2">Key Columns (PK/FK)</div>
+                          <div className="text-sm text-yellow-400">No key columns defined</div>
+                        </div>
+                      );
+                    })()}
+
                     <button
                       onClick={() => router.push(`/data-sources/${source.id}/schema`)}
-                      className="mt-3 w-full text-sm text-blue-400 hover:text-blue-300 flex items-center justify-center gap-1"
+                      className="mt-3 w-full text-sm text-white hover:text-white flex items-center justify-center gap-1"
                     >
                       View Schema
                       <ExternalLink className="w-3 h-3" />
@@ -284,8 +359,8 @@ export default function DataMarketplacePage() {
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
               <Box className="w-6 h-6 text-blue-400" />
-              <h2 className="text-2xl font-semibold text-white">Data Cubes</h2>
-              <span className="text-sm text-gray-400">({filteredData.cubes.length})</span>
+              <h2 className="text-2xl font-semibold text-green-400">Semantic Layer</h2>
+              <span className="text-sm text-white">({filteredData.cubes.length})</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredData.cubes.map((cube) => (
@@ -295,14 +370,14 @@ export default function DataMarketplacePage() {
                   onClick={() => router.push(`/data-cubes/${cube.id}`)}
                 >
                   <div className="flex items-start justify-between mb-3">
-                    <h3 className="text-lg font-semibold text-white">{cube.name}</h3>
-                    <ExternalLink className="w-4 h-4 text-gray-400" />
+                    <h3 className="text-lg font-semibold text-green-400">{cube.name}</h3>
+                    <ExternalLink className="w-4 h-4 text-yellow-400" />
                   </div>
-                  <p className="text-sm text-gray-300 mb-4 line-clamp-2">{cube.description}</p>
+                  <p className="text-sm text-yellow-400 mb-4 line-clamp-2">{cube.description}</p>
                   
                   <div className="space-y-2">
                     <div>
-                      <span className="text-xs font-medium text-gray-400">Dimensions:</span>
+                      <span className="text-xs font-medium text-yellow-400">Dimensions:</span>
                       <div className="flex flex-wrap gap-1 mt-1">
                         {cube.dimensions.map((dim) => (
                           <span
@@ -315,7 +390,7 @@ export default function DataMarketplacePage() {
                       </div>
                     </div>
                     <div>
-                      <span className="text-xs font-medium text-gray-400">Measures:</span>
+                      <span className="text-xs font-medium text-yellow-400">Measures:</span>
                       <div className="flex flex-wrap gap-1 mt-1">
                         {cube.measures.map((measure) => (
                           <span
@@ -334,47 +409,12 @@ export default function DataMarketplacePage() {
           </div>
         )}
 
-        {/* Dashboards Section */}
-        {(selectedCategory === 'all' || selectedCategory === 'dashboards') && filteredData.dashboards.length > 0 && (
-          <div className="mb-8">
-            <div className="flex items-center gap-2 mb-4">
-              <LayoutDashboard className="w-6 h-6 text-blue-400" />
-              <h2 className="text-2xl font-semibold text-white">Dashboards</h2>
-              <span className="text-sm text-gray-400">({filteredData.dashboards.length})</span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredData.dashboards.map((dashboard) => (
-                <div
-                  key={dashboard.id}
-                  className="glass rounded-xl p-6 hover:glass-strong transition-all cursor-pointer"
-                  onClick={() => router.push(`/dashboards/${dashboard.id}`)}
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <h3 className="text-lg font-semibold text-white">{dashboard.name}</h3>
-                    <ExternalLink className="w-4 h-4 text-gray-400" />
-                  </div>
-                  <p className="text-sm text-gray-300 mb-4 line-clamp-2">{dashboard.description}</p>
-                  
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-400">
-                      {dashboard.widgets.length} {dashboard.widgets.length === 1 ? 'widget' : 'widgets'}
-                    </span>
-                    <span className="text-gray-400">
-                      Updated {new Date(dashboard.updatedAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Empty State */}
         {totalItems === 0 && (
           <div className="text-center py-12 glass rounded-xl">
-            <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-white mb-2">No results found</h3>
-            <p className="text-gray-300">
+            <Search className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-green-400 mb-2">No results found</h3>
+            <p className="text-yellow-400">
               Try adjusting your search query or filter criteria
             </p>
           </div>
@@ -448,11 +488,11 @@ function DataCubeModal({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
       <div className="glass-strong rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold mb-4 text-white">Create AI Semitic Data Layer</h2>
+        <h2 className="text-2xl font-bold mb-4 text-green-400">Create AI Semitic Data Layer</h2>
 
         <div className="space-y-4 mb-6">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-yellow-400 mb-1">
               Name
             </label>
             <input
@@ -465,7 +505,7 @@ function DataCubeModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-yellow-400 mb-1">
               Description
             </label>
             <textarea
@@ -477,7 +517,7 @@ function DataCubeModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-yellow-400 mb-1">
               Query (Natural Language)
             </label>
             <textarea
@@ -487,7 +527,7 @@ function DataCubeModal({
               rows={4}
               className="w-full px-3 py-2 glass rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
             />
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-yellow-400 mt-1">
               Describe what data you want to see in natural language
             </p>
           </div>
@@ -522,7 +562,7 @@ function DataCubeModal({
                   {preview.data?.slice(0, 5).map((row: any, idx: number) => (
                     <tr key={idx} className="border-b border-white/10">
                       {Object.values(row).map((val: any, i: number) => (
-                        <td key={i} className="py-2 px-3 text-gray-300">
+                        <td key={i} className="py-2 px-3 text-yellow-400">
                           {val}
                         </td>
                       ))}
