@@ -8,6 +8,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        'pale-gold': '#e6c87a',
+        cream: '#fdf5e6',
+        'soft-mint': '#98d4bb',
         primary: {
           50: '#f0f9ff',
           100: '#e0f2fe',

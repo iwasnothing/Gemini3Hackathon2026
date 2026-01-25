@@ -51,34 +51,34 @@ export default function DataCubeDetailPage() {
       <div className="max-w-7xl mx-auto">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-yellow-400 hover:text-white mb-6"
+          className="flex items-center gap-2 text-cream hover:text-white mb-6"
         >
           <ArrowLeft className="w-5 h-5" />
           Back to AI Semitic Data Layer
         </button>
 
         <div className="mb-6 glass rounded-xl p-6">
-          <h1 className="text-3xl font-bold text-green-400 mb-2">{cube.name}</h1>
-          <p className="text-yellow-400 mt-1">{cube.description}</p>
+          <h1 className="text-3xl font-bold text-soft-mint mb-2">{cube.name}</h1>
+          <p className="text-cream mt-1">{cube.description}</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 glass rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-green-400 mb-4">Query</h2>
+            <h2 className="text-xl font-semibold text-soft-mint mb-4">Query</h2>
             <div className="glass-strong p-4 rounded-lg">
-              <code className="text-sm text-yellow-400 whitespace-pre-wrap">
+              <code className="text-sm text-cream whitespace-pre-wrap">
                 {cube.query}
               </code>
             </div>
           </div>
 
           <div className="glass rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-green-400 mb-4">
+            <h2 className="text-xl font-semibold text-soft-mint mb-4">
               Metadata
             </h2>
             <div className="space-y-4">
               <div>
-                <div className="text-sm text-yellow-400 mb-2">Dimensions</div>
+                <div className="text-sm text-cream mb-2">Dimensions</div>
                 <div className="flex flex-wrap gap-2">
                   {cube.dimensions.map((dim) => (
                     <span
@@ -91,12 +91,12 @@ export default function DataCubeDetailPage() {
                 </div>
               </div>
               <div>
-                <div className="text-sm text-yellow-400 mb-2">Measures</div>
+                <div className="text-sm text-cream mb-2">Measures</div>
                 <div className="flex flex-wrap gap-2">
                   {cube.measures.map((measure) => (
                     <span
                       key={measure}
-                      className="px-3 py-1 bg-green-500/20 text-green-300 text-sm rounded border border-green-500/30"
+                      className="px-3 py-1 bg-soft-mint/20 text-soft-mint text-sm rounded border border-soft-mint/30"
                     >
                       {measure}
                     </span>
@@ -105,16 +105,16 @@ export default function DataCubeDetailPage() {
               </div>
               {cube.metadata && Object.keys(cube.metadata).length > 0 && (
                 <div>
-                  <div className="text-sm text-yellow-400 mb-2">Additional Metadata</div>
+                  <div className="text-sm text-cream mb-2">Additional Metadata</div>
                   <div className="glass-strong p-3 rounded">
-                    <pre className="text-xs text-yellow-400 whitespace-pre-wrap">
+                    <pre className="text-xs text-cream whitespace-pre-wrap">
                       {JSON.stringify(cube.metadata, null, 2)}
                     </pre>
                   </div>
                 </div>
               )}
               <div className="pt-4 border-t border-white/10">
-                <div className="text-sm text-yellow-400">Created</div>
+                <div className="text-sm text-cream">Created</div>
                 <div className="text-sm text-white">
                   {new Date(cube.createdAt).toLocaleString()}
                 </div>
@@ -125,7 +125,7 @@ export default function DataCubeDetailPage() {
 
         {cube.data && cube.data.length > 0 && (
           <div className="mt-6 glass rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-green-400 mb-4">
+            <h2 className="text-xl font-semibold text-soft-mint mb-4">
               Sample Data
             </h2>
             <div className="overflow-x-auto">
@@ -146,7 +146,7 @@ export default function DataCubeDetailPage() {
                   {cube.data.slice(0, 10).map((row: any, idx: number) => (
                     <tr key={idx}>
                       {Object.values(row).map((val: any, i: number) => (
-                        <td key={i} className="px-4 py-3 text-sm text-yellow-400">
+                        <td key={i} className="px-4 py-3 text-sm text-cream">
                           {val}
                         </td>
                       ))}

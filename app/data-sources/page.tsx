@@ -41,9 +41,9 @@ export default function DataSourcesPage() {
   const getStatusIcon = (status: DataSource['status']) => {
     switch (status) {
       case 'connected':
-        return <CheckCircle2 className="w-5 h-5 text-green-500" />;
+        return <CheckCircle2 className="w-5 h-5 text-soft-mint" />;
       case 'disconnected':
-        return <XCircle className="w-5 h-5 text-yellow-400" />;
+        return <XCircle className="w-5 h-5 text-cream" />;
       case 'error':
         return <AlertCircle className="w-5 h-5 text-red-500" />;
     }
@@ -52,7 +52,7 @@ export default function DataSourcesPage() {
   const getStatusColor = (status: DataSource['status']) => {
     switch (status) {
       case 'connected':
-        return 'bg-green-100 text-green-800';
+        return 'bg-soft-mint/20 text-soft-mint';
       case 'disconnected':
         return 'bg-gray-100 text-gray-800';
       case 'error':
@@ -65,8 +65,8 @@ export default function DataSourcesPage() {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div className="glass rounded-xl p-6 flex-1">
-            <h1 className="text-3xl font-bold text-green-400 mb-2">Data Sources</h1>
-            <p className="text-yellow-400 mt-1">
+            <h1 className="text-3xl font-bold text-soft-mint mb-2">Data Sources</h1>
+            <p className="text-cream mt-1">
               Configure and manage your data source connections
             </p>
           </div>
@@ -90,14 +90,14 @@ export default function DataSourcesPage() {
               >
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-green-400">
+                    <h3 className="text-lg font-semibold text-soft-mint">
                       {source.name}
                     </h3>
-                    <p className="text-sm text-yellow-400 mt-1">
+                    <p className="text-sm text-cream mt-1">
                       {source.type.toUpperCase()}
                     </p>
                   </div>
-                  <button className="text-yellow-400 hover:text-white">
+                  <button className="text-cream hover:text-white">
                     <MoreVertical className="w-5 h-5" />
                   </button>
                 </div>
@@ -106,16 +106,16 @@ export default function DataSourcesPage() {
                   {source.type === 'bigquery' ? (
                     <>
                       <div className="text-sm">
-                        <span className="text-yellow-400">Project ID:</span>{' '}
+                        <span className="text-cream">Project ID:</span>{' '}
                         <span className="text-white">{source.projectId || source.host}</span>
                       </div>
                       <div className="text-sm">
-                        <span className="text-yellow-400">Dataset:</span>{' '}
+                        <span className="text-cream">Dataset:</span>{' '}
                         <span className="text-white">{source.dataset || source.database}</span>
                       </div>
                       {source.location && (
                         <div className="text-sm">
-                          <span className="text-yellow-400">Location:</span>{' '}
+                          <span className="text-cream">Location:</span>{' '}
                           <span className="text-white">{source.location}</span>
                         </div>
                       )}
@@ -123,15 +123,15 @@ export default function DataSourcesPage() {
                   ) : (
                     <>
                       <div className="text-sm">
-                        <span className="text-yellow-400">Host:</span>{' '}
+                        <span className="text-cream">Host:</span>{' '}
                         <span className="text-white">{source.host}</span>
                       </div>
                       <div className="text-sm">
-                        <span className="text-yellow-400">Database:</span>{' '}
+                        <span className="text-cream">Database:</span>{' '}
                         <span className="text-white">{source.database}</span>
                       </div>
                       <div className="text-sm">
-                        <span className="text-yellow-400">Username:</span>{' '}
+                        <span className="text-cream">Username:</span>{' '}
                         <span className="text-white">{source.username}</span>
                       </div>
                     </>
@@ -144,10 +144,10 @@ export default function DataSourcesPage() {
                     <span
                       className={`text-xs font-medium px-2 py-1 rounded ${
                         source.status === 'connected'
-                          ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                          ? 'bg-soft-mint/20 text-soft-mint border border-soft-mint/30'
                           : source.status === 'error'
                           ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                          : 'bg-gray-500/20 text-yellow-400 border border-gray-500/30'
+                          : 'bg-gray-500/20 text-cream border border-gray-500/30'
                       }`}
                     >
                       {source.status}
@@ -267,10 +267,10 @@ function DataSourceModal({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
       <div className="glass-strong rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold mb-4 text-green-400">Add Data Source</h2>
+        <h2 className="text-2xl font-bold mb-4 text-soft-mint">Add Data Source</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-yellow-400 mb-1">
+            <label className="block text-sm font-medium text-pale-gold mb-1">
               Name
             </label>
             <input
@@ -284,7 +284,7 @@ function DataSourceModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-yellow-400 mb-1">
+            <label className="block text-sm font-medium text-pale-gold mb-1">
               Type
             </label>
             <select
@@ -310,7 +310,7 @@ function DataSourceModal({
             </div>
           )}
           <div>
-            <label className="block text-sm font-medium text-yellow-400 mb-1">
+            <label className="block text-sm font-medium text-pale-gold mb-1">
               {isBigQuery ? (
                 <>
                   Project ID <span className="text-red-400">*</span>
@@ -330,7 +330,7 @@ function DataSourceModal({
               className="w-full px-3 py-2 glass rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {isBigQuery && (
-              <p className="mt-1 text-xs text-yellow-400">
+              <p className="mt-1 text-xs text-cream">
                 Your Google Cloud Project ID
               </p>
             )}
@@ -338,7 +338,7 @@ function DataSourceModal({
           {isBigQuery ? (
             <>
               <div>
-                <label className="block text-sm font-medium text-yellow-400 mb-1">
+                <label className="block text-sm font-medium text-pale-gold mb-1">
                   Dataset <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -351,12 +351,12 @@ function DataSourceModal({
                   placeholder="e.g., analytics_dataset"
                   className="w-full px-3 py-2 glass rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <p className="mt-1 text-xs text-yellow-400">
+                <p className="mt-1 text-xs text-cream">
                   The BigQuery dataset name you want to connect to
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-yellow-400 mb-1">
+                <label className="block text-sm font-medium text-pale-gold mb-1">
                   Location
                 </label>
                 <input
@@ -368,12 +368,12 @@ function DataSourceModal({
                   placeholder="e.g., US, EU, asia-northeast1 (default: US)"
                   className="w-full px-3 py-2 glass rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <p className="mt-1 text-xs text-yellow-400">
+                <p className="mt-1 text-xs text-cream">
                   Optional: BigQuery dataset location (US, EU, or specific region)
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-yellow-400 mb-1">
+                <label className="block text-sm font-medium text-pale-gold mb-1">
                   Service Account Email
                 </label>
                 <input
@@ -385,12 +385,12 @@ function DataSourceModal({
                   placeholder="service-account@project-id.iam.gserviceaccount.com"
                   className="w-full px-3 py-2 glass rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <p className="mt-1 text-xs text-yellow-400">
+                <p className="mt-1 text-xs text-cream">
                   Optional: Service account email (usually found in the JSON key file)
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-yellow-400 mb-1">
+                <label className="block text-sm font-medium text-pale-gold mb-1">
                   Service Account Key (JSON File) <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -401,13 +401,13 @@ function DataSourceModal({
                   className="w-full px-3 py-2 glass rounded-lg text-white text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:glass-strong file:text-white hover:file:glass-active focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {serviceAccountKeyFile && (
-                  <p className="mt-2 text-sm text-green-400 flex items-center gap-1">
+                  <p className="mt-2 text-sm text-soft-mint flex items-center gap-1">
                     <span>✓</span>
                     <span>{serviceAccountKeyFile.name} uploaded successfully</span>
                   </p>
                 )}
                 {!serviceAccountKeyFile && (
-                  <p className="mt-1 text-xs text-yellow-400">
+                  <p className="mt-1 text-xs text-cream">
                     Upload your GCP service account key JSON file. Download from Google Cloud Console → IAM & Admin → Service Accounts
                   </p>
                 )}
@@ -417,7 +417,7 @@ function DataSourceModal({
             <>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-yellow-400 mb-1">
+                  <label className="block text-sm font-medium text-pale-gold mb-1">
                     Port
                   </label>
                   <input
@@ -431,7 +431,7 @@ function DataSourceModal({
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-yellow-400 mb-1">
+                  <label className="block text-sm font-medium text-pale-gold mb-1">
                     Database
                   </label>
                   <input
@@ -446,7 +446,7 @@ function DataSourceModal({
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-yellow-400 mb-1">
+                <label className="block text-sm font-medium text-pale-gold mb-1">
                   Username
                 </label>
                 <input
@@ -460,7 +460,7 @@ function DataSourceModal({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-yellow-400 mb-1">
+                <label className="block text-sm font-medium text-pale-gold mb-1">
                   Password
                 </label>
                 <input

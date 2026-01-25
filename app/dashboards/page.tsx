@@ -43,8 +43,8 @@ export default function DashboardsPage() {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <div className="glass rounded-xl p-6 flex-1">
-            <h1 className="text-3xl font-bold text-green-400 mb-2">Dashboards</h1>
-            <p className="text-yellow-400 mt-1">
+            <h1 className="text-3xl font-bold text-soft-mint mb-2">Dashboards</h1>
+            <p className="text-cream mt-1">
               Build and manage interactive dashboards
             </p>
           </div>
@@ -66,13 +66,13 @@ export default function DashboardsPage() {
                 key={dashboard.id}
                 className="glass rounded-xl p-6 hover:glass-strong transition-all"
               >
-                <h3 className="text-lg font-semibold text-green-400 mb-2">
+                <h3 className="text-lg font-semibold text-soft-mint mb-2">
                   {dashboard.name}
                 </h3>
-                <p className="text-sm text-yellow-400 mb-4 line-clamp-2">
+                <p className="text-sm text-cream mb-4 line-clamp-2">
                   {dashboard.description}
                 </p>
-                <div className="flex items-center justify-between text-xs text-yellow-400 mb-4">
+                <div className="flex items-center justify-between text-xs text-cream mb-4">
                   <span>
                     {dashboard.widgets.length} widget
                     {dashboard.widgets.length !== 1 ? 's' : ''}
@@ -137,10 +137,10 @@ function DashboardModal({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
       <div className="glass-strong rounded-xl p-6 w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4 text-green-400">Create Dashboard</h2>
+        <h2 className="text-2xl font-bold mb-4 text-soft-mint">Create Dashboard</h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-yellow-400 mb-1">
+            <label className="block text-sm font-medium text-pale-gold mb-1">
               Name
             </label>
             <input
@@ -152,7 +152,7 @@ function DashboardModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-yellow-400 mb-1">
+            <label className="block text-sm font-medium text-pale-gold mb-1">
               Description
             </label>
             <textarea

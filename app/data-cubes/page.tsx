@@ -42,8 +42,8 @@ export default function DataCubesPage() {
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
           <div className="glass rounded-xl p-6">
-            <h1 className="text-3xl font-bold text-green-400 mb-2">AI Semitic Data Layer</h1>
-            <p className="text-yellow-400 mt-1">
+            <h1 className="text-3xl font-bold text-soft-mint mb-2">AI Semitic Data Layer</h1>
+            <p className="text-cream mt-1">
               Create AI Semitic Data Layers with metadata using natural language queries
             </p>
           </div>
@@ -58,14 +58,14 @@ export default function DataCubesPage() {
                 key={cube.id}
                 className="glass rounded-xl p-6 hover:glass-strong transition-all"
               >
-                <h3 className="text-lg font-semibold text-green-400 mb-2">
+                <h3 className="text-lg font-semibold text-soft-mint mb-2">
                   {cube.name}
                 </h3>
-                <p className="text-sm text-yellow-400 mb-4 line-clamp-2">
+                <p className="text-sm text-cream mb-4 line-clamp-2">
                   {cube.description}
                 </p>
                 <div className="mb-4">
-                  <div className="text-xs text-yellow-400 mb-1">Dimensions</div>
+                  <div className="text-xs text-cream mb-1">Dimensions</div>
                   <div className="flex flex-wrap gap-2">
                     {cube.dimensions.map((dim) => (
                       <span
@@ -78,19 +78,19 @@ export default function DataCubesPage() {
                   </div>
                 </div>
                 <div className="mb-4">
-                  <div className="text-xs text-yellow-400 mb-1">Measures</div>
+                  <div className="text-xs text-cream mb-1">Measures</div>
                   <div className="flex flex-wrap gap-2">
                     {cube.measures.map((measure) => (
                       <span
                         key={measure}
-                        className="px-2 py-1 bg-green-500/20 text-green-300 text-xs rounded border border-green-500/30"
+                        className="px-2 py-1 bg-soft-mint/20 text-soft-mint text-xs rounded border border-soft-mint/30"
                       >
                         {measure}
                       </span>
                     ))}
                   </div>
                 </div>
-                <div className="text-xs text-yellow-400 mb-4">
+                <div className="text-xs text-cream mb-4">
                   Created {new Date(cube.createdAt).toLocaleDateString()}
                 </div>
                 <button

@@ -26,7 +26,7 @@ export default function Sidebar() {
         <div className="w-10 h-10 rounded-lg bg-black/30 flex items-center justify-center border border-white/20">
           <span className="text-xl font-bold text-white">S</span>
         </div>
-        <span className="text-lg font-semibold text-green-400">My Insight Canvas</span>
+        <span className="text-lg font-semibold text-soft-mint">My Insight Canvas</span>
       </div>
 
       {/* Navigation */}
@@ -42,13 +42,13 @@ export default function Sidebar() {
                 'flex items-center gap-3 px-4 py-3 rounded-lg transition-all relative',
                 isActive
                   ? 'glass-active text-white'
-                  : 'text-yellow-400 hover:glass-strong hover:text-white'
+                  : 'text-pale-gold hover:glass-strong hover:text-white'
               )}
             >
               {isActive && (
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-400 to-purple-500 rounded-r-full" />
               )}
-              <Icon className={clsx('w-5 h-5', isActive ? 'text-white' : 'text-yellow-400')} />
+              <Icon className={clsx('w-5 h-5', isActive ? 'text-white' : 'text-pale-gold')} />
               <span className="text-sm font-medium">{item.name}</span>
             </Link>
           );
@@ -57,7 +57,7 @@ export default function Sidebar() {
 
       {/* Footer */}
       <div className="mt-auto pt-4 border-t border-white/10">
-        <div className="flex items-center gap-2 px-4 py-2 text-sm text-yellow-400">
+        <div className="flex items-center gap-2 px-4 py-2 text-sm text-pale-gold">
           <LogOut className="w-4 h-4" />
           <span>My Insight Canvas</span>
         </div>

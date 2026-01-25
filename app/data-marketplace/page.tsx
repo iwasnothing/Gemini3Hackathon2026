@@ -63,9 +63,9 @@ export default function DataMarketplacePage() {
   const getStatusIcon = (status: DataSource['status']) => {
     switch (status) {
       case 'connected':
-        return <CheckCircle2 className="w-4 h-4 text-green-500" />;
+        return <CheckCircle2 className="w-4 h-4 text-soft-mint" />;
       case 'disconnected':
-        return <XCircle className="w-4 h-4 text-yellow-400" />;
+        return <XCircle className="w-4 h-4 text-cream" />;
       case 'error':
         return <AlertCircle className="w-4 h-4 text-red-500" />;
     }
@@ -145,8 +145,8 @@ export default function DataMarketplacePage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div className="glass rounded-xl p-6 flex-1">
-            <h1 className="text-3xl font-bold text-green-400 mb-2">Data Marketplace</h1>
-            <p className="text-yellow-400 mt-1">
+            <h1 className="text-3xl font-bold text-soft-mint mb-2">Data Marketplace</h1>
+            <p className="text-cream mt-1">
               Browse and discover all available data layers and semantic layers
             </p>
           </div>
@@ -162,7 +162,7 @@ export default function DataMarketplacePage() {
         {/* Search and Filters */}
         <div className="mb-6 space-y-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-yellow-400 w-5 h-5 z-10" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-cream w-5 h-5 z-10" />
             <input
               type="text"
               placeholder="Search data layers, tables, or cubes..."
@@ -173,7 +173,7 @@ export default function DataMarketplacePage() {
           </div>
           
           <div className="flex items-center gap-4 glass rounded-xl p-4">
-            <Filter className="w-5 h-5 text-yellow-400" />
+            <Filter className="w-5 h-5 text-cream" />
             <div className="flex gap-2">
               {[
                 { value: 'all', label: 'All' },
@@ -186,14 +186,14 @@ export default function DataMarketplacePage() {
                   className={`px-4 py-2 rounded-lg font-medium transition-all ${
                     selectedCategory === category.value
                       ? 'glass-active text-white'
-                      : 'glass text-yellow-400 hover:glass-strong hover:text-white'
+                      : 'glass text-pale-gold hover:glass-strong hover:text-white'
                   }`}
                 >
                   {category.label}
                 </button>
               ))}
             </div>
-            <div className="ml-auto text-sm text-yellow-400">
+            <div className="ml-auto text-sm text-cream">
               {totalItems} {totalItems === 1 ? 'item' : 'items'} found
             </div>
           </div>
@@ -204,7 +204,7 @@ export default function DataMarketplacePage() {
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
               <Database className="w-6 h-6 text-blue-400" />
-              <h2 className="text-2xl font-semibold text-green-400">Data Layer</h2>
+              <h2 className="text-2xl font-semibold text-soft-mint">Data Layer</h2>
               <span className="text-sm text-white">({filteredData.sources.length})</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -216,7 +216,7 @@ export default function DataMarketplacePage() {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-2">
                       {getStatusIcon(source.status)}
-                      <h3 className="text-lg font-semibold text-green-400">{source.name}</h3>
+                      <h3 className="text-lg font-semibold text-soft-mint">{source.name}</h3>
                     </div>
                     <span className="text-xs font-medium px-2 py-1 bg-blue-500/20 text-blue-300 rounded border border-blue-500/30">
                       {source.type.toUpperCase()}
@@ -227,22 +227,22 @@ export default function DataMarketplacePage() {
                     {source.type === 'bigquery' ? (
                       <>
                         <div className="text-sm">
-                          <span className="text-yellow-400">Project:</span>{' '}
+                          <span className="text-cream">Project:</span>{' '}
                           <span className="text-white">{source.projectId || source.host}</span>
                         </div>
                         <div className="text-sm">
-                          <span className="text-yellow-400">Dataset:</span>{' '}
+                          <span className="text-cream">Dataset:</span>{' '}
                           <span className="text-white">{source.dataset || source.database}</span>
                         </div>
                       </>
                     ) : (
                       <>
                         <div className="text-sm">
-                          <span className="text-yellow-400">Host:</span>{' '}
+                          <span className="text-cream">Host:</span>{' '}
                           <span className="text-white">{source.host}</span>
                         </div>
                         <div className="text-sm">
-                          <span className="text-yellow-400">Database:</span>{' '}
+                          <span className="text-cream">Database:</span>{' '}
                           <span className="text-white">{source.database}</span>
                         </div>
                       </>
@@ -252,14 +252,14 @@ export default function DataMarketplacePage() {
                   <div className="border-t border-white/10 pt-4 space-y-4">
                     {/* 1. Dataset Purpose and Source */}
                     <div>
-                      <div className="text-xs font-medium text-yellow-400 mb-2">Dataset Purpose & Source</div>
+                      <div className="text-xs font-medium text-pale-gold mb-2">Dataset Purpose & Source</div>
                       <div className="text-sm text-white">
                         <div className="mb-1">
-                          <span className="text-yellow-400">Purpose:</span>{' '}
+                          <span className="text-cream">Purpose:</span>{' '}
                           <span>Analytical dataset for {source.name.toLowerCase()} operations and reporting</span>
                         </div>
                         <div>
-                          <span className="text-yellow-400">Source:</span>{' '}
+                          <span className="text-cream">Source:</span>{' '}
                           <span>
                             {source.type === 'bigquery' 
                               ? `${source.projectId || source.host}.${source.dataset || source.database}`
@@ -275,7 +275,7 @@ export default function DataMarketplacePage() {
                       const relatedInsights = getRelatedInsights(source.id);
                       return relatedInsights.length > 0 ? (
                         <div>
-                          <div className="text-xs font-medium text-yellow-400 mb-2">Key Reports & Insights</div>
+                          <div className="text-xs font-medium text-pale-gold mb-2">Key Reports & Insights</div>
                           <div className="space-y-1">
                             {relatedInsights.slice(0, 3).map((insight) => (
                               <div key={insight.id} className="text-sm text-white flex items-center gap-2">
@@ -284,7 +284,7 @@ export default function DataMarketplacePage() {
                               </div>
                             ))}
                             {relatedInsights.length > 3 && (
-                              <div className="text-xs text-yellow-400">
+                              <div className="text-xs text-cream">
                                 +{relatedInsights.length - 3} more
                               </div>
                             )}
@@ -292,7 +292,7 @@ export default function DataMarketplacePage() {
                         </div>
                       ) : (
                         <div>
-                          <div className="text-xs font-medium text-yellow-400 mb-2">Key Reports & Insights</div>
+                          <div className="text-xs font-medium text-pale-gold mb-2">Key Reports & Insights</div>
                           <div className="text-sm text-white">No insights available yet</div>
                         </div>
                       );
@@ -303,7 +303,7 @@ export default function DataMarketplacePage() {
                       const keyColumns = getKeyColumns(source.tables);
                       return keyColumns.length > 0 ? (
                         <div>
-                          <div className="text-xs font-medium text-yellow-400 mb-2">Key Columns (PK/FK)</div>
+                          <div className="text-xs font-medium text-pale-gold mb-2">Key Columns (PK/FK)</div>
                           <div className="space-y-1 max-h-32 overflow-y-auto">
                             {keyColumns.slice(0, 5).map((col, idx) => (
                               <div key={idx} className="text-xs text-white flex items-center gap-2">
@@ -314,19 +314,19 @@ export default function DataMarketplacePage() {
                                   </span>
                                 )}
                                 {col.isFK && (
-                                  <span className="px-1.5 py-0.5 bg-green-500/20 text-green-300 rounded text-[10px] border border-green-500/30">
+                                  <span className="px-1.5 py-0.5 bg-soft-mint/20 text-soft-mint rounded text-[10px] border border-soft-mint/30">
                                     FK
                                   </span>
                                 )}
                                 {col.fkReference && (
-                                  <span className="text-yellow-400 text-[10px] truncate">
+                                  <span className="text-cream text-[10px] truncate">
                                     → {col.fkReference}
                                   </span>
                                 )}
                               </div>
                             ))}
                             {keyColumns.length > 5 && (
-                              <div className="text-xs text-yellow-400">
+                              <div className="text-xs text-cream">
                                 +{keyColumns.length - 5} more columns
                               </div>
                             )}
@@ -334,8 +334,8 @@ export default function DataMarketplacePage() {
                         </div>
                       ) : (
                         <div>
-                          <div className="text-xs font-medium text-yellow-400 mb-2">Key Columns (PK/FK)</div>
-                          <div className="text-sm text-yellow-400">No key columns defined</div>
+                          <div className="text-xs font-medium text-pale-gold mb-2">Key Columns (PK/FK)</div>
+                          <div className="text-sm text-cream">No key columns defined</div>
                         </div>
                       );
                     })()}
@@ -359,7 +359,7 @@ export default function DataMarketplacePage() {
           <div className="mb-8">
             <div className="flex items-center gap-2 mb-4">
               <Box className="w-6 h-6 text-blue-400" />
-              <h2 className="text-2xl font-semibold text-green-400">Semantic Layer</h2>
+              <h2 className="text-2xl font-semibold text-soft-mint">Semantic Layer</h2>
               <span className="text-sm text-white">({filteredData.cubes.length})</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -370,14 +370,14 @@ export default function DataMarketplacePage() {
                   onClick={() => router.push(`/data-cubes/${cube.id}`)}
                 >
                   <div className="flex items-start justify-between mb-3">
-                    <h3 className="text-lg font-semibold text-green-400">{cube.name}</h3>
-                    <ExternalLink className="w-4 h-4 text-yellow-400" />
+                    <h3 className="text-lg font-semibold text-soft-mint">{cube.name}</h3>
+                    <ExternalLink className="w-4 h-4 text-cream" />
                   </div>
-                  <p className="text-sm text-yellow-400 mb-4 line-clamp-2">{cube.description}</p>
+                  <p className="text-sm text-cream mb-4 line-clamp-2">{cube.description}</p>
                   
                   <div className="space-y-2">
                     <div>
-                      <span className="text-xs font-medium text-yellow-400">Dimensions:</span>
+                      <span className="text-xs font-medium text-pale-gold">Dimensions:</span>
                       <div className="flex flex-wrap gap-1 mt-1">
                         {cube.dimensions.map((dim) => (
                           <span
@@ -390,12 +390,12 @@ export default function DataMarketplacePage() {
                       </div>
                     </div>
                     <div>
-                      <span className="text-xs font-medium text-yellow-400">Measures:</span>
+                      <span className="text-xs font-medium text-pale-gold">Measures:</span>
                       <div className="flex flex-wrap gap-1 mt-1">
                         {cube.measures.map((measure) => (
                           <span
                             key={measure}
-                            className="text-xs px-2 py-1 bg-green-500/20 text-green-300 rounded border border-green-500/30"
+                            className="text-xs px-2 py-1 bg-soft-mint/20 text-soft-mint rounded border border-soft-mint/30"
                           >
                             {measure}
                           </span>
@@ -412,9 +412,9 @@ export default function DataMarketplacePage() {
         {/* Empty State */}
         {totalItems === 0 && (
           <div className="text-center py-12 glass rounded-xl">
-            <Search className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-green-400 mb-2">No results found</h3>
-            <p className="text-yellow-400">
+            <Search className="w-12 h-12 text-cream mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-soft-mint mb-2">No results found</h3>
+            <p className="text-cream">
               Try adjusting your search query or filter criteria
             </p>
           </div>
@@ -488,11 +488,11 @@ function DataCubeModal({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
       <div className="glass-strong rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold mb-4 text-green-400">Create AI Semitic Data Layer</h2>
+        <h2 className="text-2xl font-bold mb-4 text-soft-mint">Create AI Semitic Data Layer</h2>
 
         <div className="space-y-4 mb-6">
           <div>
-            <label className="block text-sm font-medium text-yellow-400 mb-1">
+            <label className="block text-sm font-medium text-pale-gold mb-1">
               Name
             </label>
             <input
@@ -505,7 +505,7 @@ function DataCubeModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-yellow-400 mb-1">
+            <label className="block text-sm font-medium text-pale-gold mb-1">
               Description
             </label>
             <textarea
@@ -517,7 +517,7 @@ function DataCubeModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-yellow-400 mb-1">
+            <label className="block text-sm font-medium text-pale-gold mb-1">
               Query (Natural Language)
             </label>
             <textarea
@@ -527,7 +527,7 @@ function DataCubeModal({
               rows={4}
               className="w-full px-3 py-2 glass rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
             />
-            <p className="text-xs text-yellow-400 mt-1">
+            <p className="text-xs text-cream mt-1">
               Describe what data you want to see in natural language
             </p>
           </div>
@@ -562,7 +562,7 @@ function DataCubeModal({
                   {preview.data?.slice(0, 5).map((row: any, idx: number) => (
                     <tr key={idx} className="border-b border-white/10">
                       {Object.values(row).map((val: any, i: number) => (
-                        <td key={i} className="py-2 px-3 text-yellow-400">
+                        <td key={i} className="py-2 px-3 text-cream">
                           {val}
                         </td>
                       ))}

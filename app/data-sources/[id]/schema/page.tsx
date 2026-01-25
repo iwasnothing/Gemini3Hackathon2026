@@ -66,15 +66,15 @@ export default function SchemaPage() {
       <div className="max-w-7xl mx-auto">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-yellow-400 hover:text-white mb-6"
+          className="flex items-center gap-2 text-cream hover:text-white mb-6"
         >
           <ArrowLeft className="w-5 h-5" />
           Back to Data Sources
         </button>
 
         <div className="mb-6 glass rounded-xl p-6">
-          <h1 className="text-3xl font-bold text-green-400 mb-2">Database Schema</h1>
-          <p className="text-yellow-400 mt-1">
+          <h1 className="text-3xl font-bold text-soft-mint mb-2">Database Schema</h1>
+          <p className="text-cream mt-1">
             View and edit table descriptions
           </p>
         </div>
@@ -87,10 +87,10 @@ export default function SchemaPage() {
             >
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h2 className="text-xl font-semibold text-green-400">
+                  <h2 className="text-xl font-semibold text-soft-mint">
                     {table.schema ? `${table.schema}.${table.name}` : table.name}
                   </h2>
-                  <p className="text-sm text-yellow-400 mt-1">
+                  <p className="text-sm text-cream mt-1">
                     {table.rowCount.toLocaleString()} rows
                   </p>
                 </div>
@@ -98,7 +98,7 @@ export default function SchemaPage() {
 
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium text-yellow-400">
+                  <label className="text-sm font-medium text-pale-gold">
                     Description
                   </label>
                   {editingTable !== table.name && (
@@ -138,7 +138,7 @@ export default function SchemaPage() {
                     </div>
                   </div>
                 ) : (
-                  <p className="text-yellow-400 glass-strong p-3 rounded">
+                  <p className="text-cream glass-strong p-3 rounded">
                     {table.description || 'No description provided'}
                   </p>
                 )}
@@ -175,33 +175,33 @@ export default function SchemaPage() {
                           <td className="px-4 py-3 text-sm font-medium text-white">
                             {column.name}
                           </td>
-                          <td className="px-4 py-3 text-sm text-yellow-400">
+                          <td className="px-4 py-3 text-sm text-cream">
                             {column.type}
                           </td>
-                          <td className="px-4 py-3 text-sm text-yellow-400">
+                          <td className="px-4 py-3 text-sm text-cream">
                             {column.primaryKey ? (
                               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30">
                                 PK
                               </span>
                             ) : (
-                              <span className="text-yellow-400">-</span>
+                              <span className="text-cream">-</span>
                             )}
                           </td>
-                          <td className="px-4 py-3 text-sm text-yellow-400">
+                          <td className="px-4 py-3 text-sm text-cream">
                             {column.foreignKey ? (
                               <div className="flex flex-col gap-1">
-                                <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-500/20 text-green-300 border border-green-500/30">
+                                <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-soft-mint/20 text-soft-mint border border-soft-mint/30">
                                   → {column.foreignKey.referencedTable}
                                 </span>
-                                <span className="text-xs text-yellow-400">
+                                <span className="text-xs text-cream">
                                   ({column.foreignKey.referencedColumn})
                                 </span>
                               </div>
                             ) : (
-                              <span className="text-yellow-400">-</span>
+                              <span className="text-cream">-</span>
                             )}
                           </td>
-                          <td className="px-4 py-3 text-sm text-yellow-400">
+                          <td className="px-4 py-3 text-sm text-cream">
                             {column.description || '-'}
                           </td>
                         </tr>
