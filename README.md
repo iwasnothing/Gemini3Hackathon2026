@@ -72,6 +72,15 @@ npm run build
 npm start
 ```
 
+### Test Automation
+
+Run automated user journey walkthroughs:
+```bash
+npm run test
+```
+
+See [TEST_AUTOMATION.md](TEST_AUTOMATION.md) for details. Tests generate visual documentation and are NOT for CI/CD or quality management.
+
 ## Project Structure
 
 ```
