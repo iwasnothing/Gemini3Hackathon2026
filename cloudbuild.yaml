@@ -1,38 +1,14 @@
 steps:
-  # ===== FRONTEND BUILD AND DEPLOY =====
-  # Step 1: Build the frontend container image
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/frontend:$COMMIT_SHA', '-f', 'Dockerfile', '.']
-
-  # Step 2: Push the frontend image to Artifact Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/frontend:$COMMIT_SHA']
-
-  # Step 3: Deploy frontend to Cloud Run
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: gcloud
-    args:
-      - 'run'
-      - 'deploy'
-      - 'gemini-hackathon-app'
-      - '--image'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/frontend:$COMMIT_SHA'
-      - '--region'
-      - 'us-central1'
-      - '--platform'
-      - 'managed'
-      - '--allow-unauthenticated'
-
   # ===== BACKEND BUILD AND DEPLOY =====
-  # Step 4: Build the backend container image
+  # Step 1: Build the backend container image
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/backend:$COMMIT_SHA', '-f', 'backend/Dockerfile', 'backend/']
 
-  # Step 5: Push the backend image to Artifact Registry
+  # Step 2: Push the backend image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/backend:$COMMIT_SHA']
 
-  # Step 6: Deploy backend to Cloud Run
+  # Step 3: Deploy backend to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -50,6 +26,38 @@ steps:
       - 'ENV=GCP,DB_HOST=35.239.204.217,DB_PORT=3306,DB_USER=sysdba,DB_NAME=securebi,INSTANCE_CONNECTION_NAME=smart-inn-484713-c1:us-central1:free-trial-first-project'
       - '--set-secrets'
       - 'DB_PASSWORD=projects/323205042509/secrets/mysql_password:latest'
+
+  # Step 4: Get backend service URL
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: bash
+    args:
+      - '-c'
+      - |
+        BACKEND_URL=$$(gcloud run services describe securebi-backend --region=us-central1 --format='value(status.url)')
+        echo "BACKEND_URL=$$BACKEND_URL" >> /workspace/backend_url.env
+
+  # ===== FRONTEND BUILD AND DEPLOY =====
+  # Step 5: Build the frontend container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/frontend:$COMMIT_SHA', '-f', 'Dockerfile', '.']
+
+  # Step 6: Push the frontend image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/frontend:$COMMIT_SHA']
+
+  # Step 7: Deploy frontend to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: bash
+    args:
+      - '-c'
+      - |
+        BACKEND_URL=$$(gcloud run services describe securebi-backend --region=us-central1 --format='value(status.url)')
+        gcloud run deploy gemini-hackathon-app \
+          --image=us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/frontend:$COMMIT_SHA \
+          --region=us-central1 \
+          --platform=managed \
+          --allow-unauthenticated \
+          --set-env-vars=BACKEND_URL=$$BACKEND_URL
 
 images:
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/frontend:$COMMIT_SHA'
