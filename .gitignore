@@ -50,3 +50,6 @@ build/
 .pytest_cache/
 .coverage
 htmlcov/
+backend/sa_info.txt
+backend/.env
+backend/.env.example

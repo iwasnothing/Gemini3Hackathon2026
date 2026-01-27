@@ -1,4 +1,0 @@
-bq-test-sa@smart-inn-484713-c1.iam.gserviceaccount.com
-smart-inn-484713-c1
-thelook_ecom
-US
