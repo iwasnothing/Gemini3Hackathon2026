@@ -37,12 +37,16 @@ export default function DashboardPage() {
 
   const fetchDashboard = async () => {
     try {
-      const response = await fetch('/api/dashboards');
-      const data = await response.json();
-      const found = data.find((d: Dashboard) => d.id === dashboardId);
-      setDashboard(found || null);
+      const response = await fetch(`/api/dashboards/${dashboardId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setDashboard(data);
+      } else {
+        setDashboard(null);
+      }
     } catch (error) {
       console.error('Error fetching dashboard:', error);
+      setDashboard(null);
     } finally {
       setLoading(false);
     }

@@ -72,20 +72,25 @@ export default function DataMarketplacePage() {
   };
 
   // Helper function to get key columns with PK/FK info
-  const getKeyColumns = (tables: Table[]) => {
+  const getKeyColumns = (tables: Table[] | undefined) => {
+    if (!tables || !Array.isArray(tables)) {
+      return [];
+    }
     const keyColumns: Array<{ name: string; type: string; isPK: boolean; isFK: boolean; fkReference?: string }> = [];
     tables.forEach((table) => {
-      table.columns.forEach((col) => {
-        if (col.primaryKey || col.foreignKey) {
-          keyColumns.push({
-            name: `${table.name}.${col.name}`,
-            type: col.type,
-            isPK: col.primaryKey || false,
-            isFK: !!col.foreignKey,
-            fkReference: col.foreignKey ? `${col.foreignKey.referencedTable}.${col.foreignKey.referencedColumn}` : undefined,
-          });
-        }
-      });
+      if (table.columns && Array.isArray(table.columns)) {
+        table.columns.forEach((col) => {
+          if (col.primaryKey || col.foreignKey) {
+            keyColumns.push({
+              name: `${table.name}.${col.name}`,
+              type: col.type,
+              isPK: col.primaryKey || false,
+              isFK: !!col.foreignKey,
+              fkReference: col.foreignKey ? `${col.foreignKey.referencedTable}.${col.foreignKey.referencedColumn}` : undefined,
+            });
+          }
+        });
+      }
     });
     return keyColumns;
   };
@@ -105,10 +110,10 @@ export default function DataMarketplacePage() {
       (source) =>
         source.name.toLowerCase().includes(query) ||
         source.type.toLowerCase().includes(query) ||
-        source.tables.some((table) => 
+        (source.tables && Array.isArray(source.tables) && source.tables.some((table) => 
           table.name.toLowerCase().includes(query) ||
           table.description?.toLowerCase().includes(query)
-        )
+        ))
     );
 
     const filteredCubes = marketplaceData.dataCubes.filter(

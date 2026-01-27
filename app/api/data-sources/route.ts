@@ -1,23 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { dataSourceService } from '@/lib/services/factory';
-import { filterDataSourcesByEntitlements, getUserFromRequest } from '@/lib/utils/entitlements';
 
 export const dynamic = 'force-dynamic';
 
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
+
+async function proxyRequest(request: NextRequest, method: string, body?: any) {
+  const userId = request.headers.get('x-user-id') || 'user-1';
+  
+  const url = `${BACKEND_URL}/api/data-sources`;
+  
+  const options: RequestInit = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'x-user-id': userId,
+    },
+  };
+  
+  if (body) {
+    options.body = JSON.stringify(body);
+  }
+  
+  try {
+    const response = await fetch(url, options);
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
+  } catch (error) {
+    console.error('Error proxying to backend:', error);
+    return NextResponse.json({ error: 'Failed to connect to backend' }, { status: 500 });
+  }
+}
+
 export async function GET(request: NextRequest) {
-  const userId = getUserFromRequest(request);
-  const allSources = await dataSourceService.getAll();
-  const filteredSources = filterDataSourcesByEntitlements(allSources, userId);
-  return NextResponse.json(filteredSources);
+  return proxyRequest(request, 'GET');
 }
 
 export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const newSource = await dataSourceService.create(body);
-    return NextResponse.json(newSource, { status: 201 });
-  } catch (error) {
-    console.error('Error creating data source:', error);
-    return NextResponse.json({ error: 'Failed to create data source' }, { status: 500 });
-  }
+  const body = await request.json();
+  return proxyRequest(request as NextRequest, 'POST', body);
 }

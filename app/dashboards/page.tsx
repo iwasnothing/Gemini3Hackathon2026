@@ -29,10 +29,17 @@ export default function DashboardsPage() {
           'x-user-id': user.id,
         },
       });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch dashboards: ${response.status}`);
+      }
+      
       const data = await response.json();
-      setDashboards(data);
+      // Ensure data is an array
+      setDashboards(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching dashboards:', error);
+      setDashboards([]); // Set to empty array on error
     } finally {
       setLoading(false);
     }
@@ -59,6 +66,16 @@ export default function DashboardsPage() {
 
         {loading ? (
           <div className="text-center py-12 text-white">Loading...</div>
+        ) : dashboards.length === 0 ? (
+          <div className="text-center py-12 text-white">
+            <p className="text-cream mb-4">No dashboards found.</p>
+            <button
+              onClick={() => setShowModal(true)}
+              className="glass-strong px-6 py-3 rounded-lg text-white font-medium hover:glass-active transition-all"
+            >
+              Create Your First Dashboard
+            </button>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {dashboards.map((dashboard) => (

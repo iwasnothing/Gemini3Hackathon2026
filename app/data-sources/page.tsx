@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Layout from '@/components/Layout';
 import { DataSource } from '@/lib/types';
-import { Plus, CheckCircle2, XCircle, AlertCircle, MoreVertical, Database } from 'lucide-react';
+import { Plus, CheckCircle2, XCircle, AlertCircle, MoreVertical, Database, Plug, Edit, Trash2 } from 'lucide-react';
 import { useUser } from '@/contexts/UserContext';
 
 export default function DataSourcesPage() {
@@ -12,7 +12,32 @@ export default function DataSourcesPage() {
   const { user } = useUser();
   const [dataSources, setDataSources] = useState<DataSource[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [editingSource, setEditingSource] = useState<DataSource | null>(null);
   const [loading, setLoading] = useState(true);
+  const [testingConnection, setTestingConnection] = useState<string | null>(null);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const menuRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    if (!openMenuId) return;
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      const menuElement = menuRefs.current[openMenuId];
+      if (menuElement && !menuElement.contains(event.target as Node)) {
+        setOpenMenuId(null);
+      }
+    };
+    
+    // Use setTimeout to avoid immediate closure when clicking the button
+    setTimeout(() => {
+      document.addEventListener('click', handleClickOutside);
+    }, 0);
+    
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [openMenuId]);
 
   useEffect(() => {
     if (user) {
@@ -30,6 +55,13 @@ export default function DataSourcesPage() {
         },
       });
       const data = await response.json();
+
+      if (!Array.isArray(data)) {
+        console.error('Unexpected response when fetching data sources (expected array)', data);
+        setDataSources([]);
+        return;
+      }
+
       setDataSources(data);
     } catch (error) {
       console.error('Error fetching data sources:', error);
@@ -60,6 +92,69 @@ export default function DataSourcesPage() {
     }
   };
 
+  const handleTestConnection = async (sourceId: string) => {
+    setTestingConnection(sourceId);
+    try {
+      const response = await fetch(`/api/data-sources/${sourceId}/test-connection`, {
+        method: 'POST',
+        headers: {
+          'x-user-id': user?.id || 'user-1',
+        },
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Refresh data sources to show updated status
+        await fetchDataSources();
+        alert('Connection test successful!');
+      } else {
+        alert(`Connection test failed: ${result.message}`);
+        // Refresh to show updated error status
+        await fetchDataSources();
+      }
+    } catch (error) {
+      console.error('Error testing connection:', error);
+      alert('Failed to test connection. Please try again.');
+    } finally {
+      setTestingConnection(null);
+    }
+  };
+
+  const handleEdit = (source: DataSource) => {
+    setEditingSource(source);
+    setShowModal(true);
+    setOpenMenuId(null);
+  };
+
+  const handleDelete = async (sourceId: string, sourceName: string) => {
+    if (!confirm(`Are you sure you want to delete "${sourceName}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/data-sources/${sourceId}`, {
+        method: 'DELETE',
+        headers: {
+          'x-user-id': user?.id || 'user-1',
+        },
+      });
+
+      if (response.ok || response.status === 204) {
+        await fetchDataSources();
+        alert('Data source deleted successfully');
+      } else {
+        const error = await response.json();
+        alert(`Failed to delete data source: ${error.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error deleting data source:', error);
+      alert('Failed to delete data source. Please try again.');
+    } finally {
+      setOpenMenuId(null);
+    }
+  };
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto">
@@ -81,7 +176,7 @@ export default function DataSourcesPage() {
 
         {loading ? (
           <div className="text-center py-12 text-white">Loading...</div>
-        ) : (
+        ) : Array.isArray(dataSources) && dataSources.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {dataSources.map((source) => (
               <div
@@ -97,9 +192,43 @@ export default function DataSourcesPage() {
                       {source.type.toUpperCase()}
                     </p>
                   </div>
-                  <button className="text-cream hover:text-white">
-                    <MoreVertical className="w-5 h-5" />
-                  </button>
+                  <div className="relative">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenMenuId(openMenuId === source.id ? null : source.id);
+                      }}
+                      className="text-cream hover:text-white transition-colors"
+                    >
+                      <MoreVertical className="w-5 h-5" />
+                    </button>
+                    {openMenuId === source.id && (
+                      <div 
+                        ref={(el) => {
+                          if (el) menuRefs.current[source.id] = el;
+                        }}
+                        className="absolute right-0 mt-2 w-48 glass-strong rounded-lg shadow-lg z-10 border border-white/10"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="py-1">
+                          <button
+                            onClick={() => handleEdit(source)}
+                            className="w-full text-left px-4 py-2 text-sm text-white hover:bg-white/10 flex items-center gap-2 transition-colors"
+                          >
+                            <Edit className="w-4 h-4" />
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(source.id, source.name)}
+                            className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 flex items-center gap-2 transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-2 mb-4">
@@ -153,22 +282,41 @@ export default function DataSourcesPage() {
                       {source.status}
                     </span>
                   </div>
-                  <button
-                    onClick={() => router.push(`/data-sources/${source.id}/schema`)}
-                    className="text-xs text-white hover:text-white flex items-center gap-1"
-                  >
-                    <Database className="w-3 h-3" />
-                    View Schema
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleTestConnection(source.id)}
+                      disabled={testingConnection === source.id}
+                      className="text-xs text-white hover:text-soft-mint flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      title="Test Connection"
+                    >
+                      <Plug className={`w-3 h-3 ${testingConnection === source.id ? 'animate-spin' : ''}`} />
+                      {testingConnection === source.id ? 'Testing...' : 'Test'}
+                    </button>
+                    <button
+                      onClick={() => router.push(`/data-sources/${source.id}/schema`)}
+                      className="text-xs text-white hover:text-white flex items-center gap-1"
+                    >
+                      <Database className="w-3 h-3" />
+                      Schema
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 text-cream">
+            No data sources found. Click &quot;Add Data Source&quot; to create one.
           </div>
         )}
 
         {showModal && (
           <DataSourceModal
-            onClose={() => setShowModal(false)}
+            dataSource={editingSource}
+            onClose={() => {
+              setShowModal(false);
+              setEditingSource(null);
+            }}
             onSave={fetchDataSources}
           />
         )}
@@ -178,21 +326,25 @@ export default function DataSourcesPage() {
 }
 
 function DataSourceModal({
+  dataSource,
   onClose,
   onSave,
 }: {
+  dataSource?: DataSource | null;
   onClose: () => void;
   onSave: () => void;
 }) {
+  const isEditMode = !!dataSource;
+  
   const [formData, setFormData] = useState({
-    name: '',
-    type: 'postgresql',
-    host: '',
-    port: 5432,
-    database: '',
-    username: '',
+    name: dataSource?.name || '',
+    type: (dataSource?.type || 'bigquery') as 'postgresql' | 'mysql' | 'mongodb' | 'snowflake' | 'bigquery',
+    host: dataSource?.projectId || dataSource?.host || '',
+    port: dataSource?.port || 443,
+    database: dataSource?.dataset || dataSource?.database || '',
+    username: dataSource?.username || '',
     password: '',
-    location: '',
+    location: dataSource?.location || '',
   });
   const [serviceAccountKeyFile, setServiceAccountKeyFile] = useState<File | null>(null);
   const [serviceAccountKeyContent, setServiceAccountKeyContent] = useState<string>('');
@@ -229,12 +381,6 @@ function DataSourceModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validate BigQuery requires service account key
-    if (isBigQuery && !serviceAccountKeyContent) {
-      alert('Please upload a service account key JSON file for BigQuery');
-      return;
-    }
 
     try {
       const payload = isBigQuery
@@ -245,29 +391,41 @@ function DataSourceModal({
             port: 443, // Default port for BigQuery
             database: formData.database, // Dataset stored in database for backward compatibility
             username: formData.username || '', // Service account email (optional)
-            password: serviceAccountKeyContent, // Service account key JSON content
+            password: serviceAccountKeyContent || undefined, // Service account key JSON content (optional)
             projectId: formData.host,
             dataset: formData.database,
             location: formData.location || undefined,
           }
         : formData;
 
-      await fetch('/api/data-sources', {
-        method: 'POST',
+      const url = isEditMode ? `/api/data-sources/${dataSource?.id}` : '/api/data-sources';
+      const method = isEditMode ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to save data source');
+      }
+
       onSave();
       onClose();
     } catch (error) {
-      console.error('Error creating data source:', error);
+      console.error('Error saving data source:', error);
+      alert(error instanceof Error ? error.message : 'Failed to save data source. Please try again.');
     }
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
       <div className="glass-strong rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold mb-4 text-soft-mint">Add Data Source</h2>
+        <h2 className="text-2xl font-bold mb-4 text-soft-mint">
+          {isEditMode ? 'Edit Data Source' : 'Add Data Source'}
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-pale-gold mb-1">
@@ -391,13 +549,12 @@ function DataSourceModal({
               </div>
               <div>
                 <label className="block text-sm font-medium text-pale-gold mb-1">
-                  Service Account Key (JSON File) <span className="text-red-400">*</span>
+                  Service Account Key (JSON File)
                 </label>
                 <input
                   type="file"
                   accept=".json,application/json"
                   onChange={handleFileChange}
-                  required={isBigQuery}
                   className="w-full px-3 py-2 glass rounded-lg text-white text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:glass-strong file:text-white hover:file:glass-active focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {serviceAccountKeyFile && (
@@ -408,7 +565,7 @@ function DataSourceModal({
                 )}
                 {!serviceAccountKeyFile && (
                   <p className="mt-1 text-xs text-cream">
-                    Upload your GCP service account key JSON file. Download from Google Cloud Console → IAM & Admin → Service Accounts
+                    Optional: Upload your GCP service account key JSON file for authentication. Download from Google Cloud Console → IAM & Admin → Service Accounts. You can add this later when testing the connection.
                   </p>
                 )}
               </div>
@@ -487,7 +644,7 @@ function DataSourceModal({
               type="submit"
               className="flex-1 px-4 py-2 glass-strong text-white rounded-lg hover:glass-active transition-all"
             >
-              Connect
+              {isEditMode ? 'Save Changes' : 'Connect'}
             </button>
           </div>
         </form>

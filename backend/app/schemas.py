@@ -1,0 +1,158 @@
+from pydantic import BaseModel, Field
+from typing import Optional, List, Dict, Any
+from datetime import datetime
+from .models import DataSourceType, DataSourceStatus, ResourceType, Permission
+
+# DataSource Schemas
+class DataSourceBase(BaseModel):
+    name: str
+    type: DataSourceType
+    host: str
+    port: int
+    database: str
+    username: str
+    project_id: Optional[str] = None
+    dataset: Optional[str] = None
+    location: Optional[str] = None
+
+class DataSourceCreate(DataSourceBase):
+    password: Optional[str] = None
+
+class DataSourceUpdate(BaseModel):
+    name: Optional[str] = None
+    host: Optional[str] = None
+    port: Optional[int] = None
+    database: Optional[str] = None
+    username: Optional[str] = None
+    password: Optional[str] = None
+    status: Optional[DataSourceStatus] = None
+    project_id: Optional[str] = None
+    dataset: Optional[str] = None
+    location: Optional[str] = None
+
+class DataSourceResponse(DataSourceBase):
+    id: str
+    status: DataSourceStatus
+    last_sync: Optional[datetime] = None
+    
+    class Config:
+        from_attributes = True
+
+# Table Schemas
+class ColumnSchema(BaseModel):
+    name: str
+    type: str
+    primary_key: Optional[bool] = False
+    foreign_key: Optional[Dict[str, str]] = None
+    description: Optional[str] = None
+
+class TableSchema(BaseModel):
+    name: str
+    schema: Optional[str] = None
+    columns: List[ColumnSchema]
+    row_count: int
+    description: Optional[str] = None
+
+# DataCube Schemas
+class DataCubeBase(BaseModel):
+    name: str
+    description: str
+    query: str
+    data_source_id: str
+    dimensions: List[str]
+    measures: List[str]
+    metadata: Optional[Dict[str, Any]] = None
+
+class DataCubeCreate(DataCubeBase):
+    pass
+
+class DataCubeResponse(DataCubeBase):
+    id: str
+    createdAt: str
+    
+    class Config:
+        from_attributes = True
+
+class DataCubeQuery(BaseModel):
+    query: str
+
+class DataCubeQueryResponse(BaseModel):
+    data: List[Dict[str, Any]]
+    columns: List[str]
+
+# Dashboard Schemas
+class WidgetSchema(BaseModel):
+    id: str
+    type: str
+    title: str
+    config: Dict[str, Any]
+    x: int
+    y: int
+    width: int
+    height: int
+
+class DashboardBase(BaseModel):
+    name: str
+    description: str
+    data_cube_id: str
+    widgets: List[WidgetSchema]
+
+class DashboardCreate(DashboardBase):
+    pass
+
+class DashboardResponse(DashboardBase):
+    id: str
+    createdAt: str
+    updatedAt: str
+    
+    class Config:
+        from_attributes = True
+
+# Data Entitlement Schemas
+class DataEntitlementBase(BaseModel):
+    user_id: str
+    resource_type: ResourceType
+    resource_id: str
+    permissions: List[Permission]
+    granted_by: str
+
+class DataEntitlementCreate(DataEntitlementBase):
+    pass
+
+class EntitledResource(BaseModel):
+    resourceType: ResourceType
+    resourceId: str
+    resourceName: str
+    permissions: List[Permission]
+    grantedAt: str
+
+# App Config Schemas
+class AppConfigBase(BaseModel):
+    key: str
+    value: Optional[str] = None
+    description: Optional[str] = None
+
+class AppConfigCreate(AppConfigBase):
+    pass
+
+class AppConfigResponse(AppConfigBase):
+    id: str
+    created_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+# Data Marketplace Response
+class DataMarketplaceResponse(BaseModel):
+    dataSources: List[DataSourceResponse]
+    dataCubes: List[DataCubeResponse]
+    dashboards: List[DashboardResponse]
+
+# AI Chat Schemas
+class AIChatMessage(BaseModel):
+    message: str
+
+class AIChatResponse(BaseModel):
+    response: str
+    timestamp: str

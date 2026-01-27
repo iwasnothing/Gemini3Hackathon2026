@@ -80,6 +80,12 @@ export default function SchemaPage() {
         </div>
 
         <div className="space-y-6">
+          {tables.length === 0 && (
+            <div className="glass rounded-xl p-6 text-cream text-sm">
+              No tables were found for this data source. Make sure the BigQuery dataset has tables
+              and that the project ID and dataset name are configured correctly.
+            </div>
+          )}
           {tables.map((table) => (
             <div
               key={table.name}

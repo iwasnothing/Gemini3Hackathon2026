@@ -1,7 +1,8 @@
-import { NextResponse } from 'next/server';
-import { dataCubeService } from '@/lib/services/factory';
+import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
+
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
 
 export async function POST(request: Request) {
   try {
@@ -17,10 +18,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Query is required and must be a non-empty string' }, { status: 400 });
     }
     
-    const result = await dataCubeService.query(query);
-    return NextResponse.json(result);
+    const url = `${BACKEND_URL}/api/data-cubes/query`;
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query }),
+    });
+    
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    console.error('Error processing query:', error);
-    return NextResponse.json({ error: 'Failed to process query' }, { status: 500 });
+    console.error('Error proxying to backend:', error);
+    return NextResponse.json({ error: 'Failed to connect to backend' }, { status: 500 });
   }
 }

@@ -1,29 +1,59 @@
 steps:
-  # Step 1: Build the container image
+  # ===== FRONTEND BUILD AND DEPLOY =====
+  # Step 1: Build the frontend container image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/my-app:$COMMIT_SHA', '.']
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/frontend:$COMMIT_SHA', '-f', 'Dockerfile', '.']
 
-  # Step 2: Push the image to Artifact Registry
+  # Step 2: Push the frontend image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/my-app:$COMMIT_SHA']
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/frontend:$COMMIT_SHA']
 
-  # Step 3: Deploy to Cloud Run
+  # Step 3: Deploy frontend to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       - 'run'
       - 'deploy'
-      - 'gemini-hackathon-app' # Ensure this matches your desired service name
+      - 'gemini-hackathon-app'
       - '--image'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/my-app:$COMMIT_SHA'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/frontend:$COMMIT_SHA'
       - '--region'
       - 'us-central1'
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
 
+  # ===== BACKEND BUILD AND DEPLOY =====
+  # Step 4: Build the backend container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/backend:$COMMIT_SHA', '-f', 'backend/Dockerfile', 'backend/']
+
+  # Step 5: Push the backend image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/backend:$COMMIT_SHA']
+
+  # Step 6: Deploy backend to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'securebi-backend'
+      - '--image'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/backend:$COMMIT_SHA'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--set-env-vars'
+      - 'PORT=8080'
+      # Note: Add database credentials via Secret Manager or environment variables
+      # Example: --set-secrets=DB_PASSWORD=db-password:latest
+
 images:
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/my-app:$COMMIT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/frontend:$COMMIT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/backend:$COMMIT_SHA'
 
 # --- ADD THIS SECTION ---
 options:

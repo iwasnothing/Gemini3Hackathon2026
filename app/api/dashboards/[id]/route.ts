@@ -1,24 +1,21 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
 
-export async function POST(
+export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const { message } = await request.json();
-    
-    const url = `${BACKEND_URL}/api/dashboards/${params.id}/ai-chat`;
+    const url = `${BACKEND_URL}/api/dashboards/${params.id}`;
     
     const response = await fetch(url, {
-      method: 'POST',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ message }),
     });
     
     const data = await response.json();
