@@ -43,7 +43,8 @@ if ENV == "GCP":
     IP_TYPE_STR = os.getenv("IP_TYPE", "PUBLIC").upper()
     IP_TYPE = IPTypes.PUBLIC if IP_TYPE_STR == "PUBLIC" else IPTypes.PRIVATE
     
-    connector = Connector(ip_type=IP_TYPE, refresh_strategy="LAZY")
+    # Initialize connector (refresh_strategy argument is not supported in current library version)
+    connector = Connector(ip_type=IP_TYPE)
     
     def getconn():
         conn = connector.connect(
