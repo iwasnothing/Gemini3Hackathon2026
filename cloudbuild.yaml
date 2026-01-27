@@ -46,8 +46,10 @@ steps:
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
-      # Note: Add database credentials via Secret Manager or environment variables
-      # Example: --set-secrets=DB_PASSWORD=db-password:latest
+      - '--set-env-vars'
+      - 'DB_HOST=35.239.204.217,DB_PORT=3306,DB_USER=sysdba,DB_NAME=securebi'
+      - '--set-secrets'
+      - 'DB_PASSWORD=projects/323205042509/secrets/mysql_password:latest'
 
 images:
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/my-repository/frontend:$COMMIT_SHA'
