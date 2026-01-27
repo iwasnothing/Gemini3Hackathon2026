@@ -46,8 +46,6 @@ steps:
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
-      - '--set-env-vars'
-      - 'PORT=8080'
       # Note: Add database credentials via Secret Manager or environment variables
       # Example: --set-secrets=DB_PASSWORD=db-password:latest
 
