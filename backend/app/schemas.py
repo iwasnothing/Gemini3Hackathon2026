@@ -65,7 +65,7 @@ class DataCubeBase(BaseModel):
     name: str
     description: str
     query: str
-    data_source_id: str = Field(alias="dataSourceId")  # Accept camelCase from frontend, store as snake_case
+    data_source_id: str = Field(..., alias="dataSourceId")  # Accept camelCase from frontend, store as snake_case
     dimensions: List[str]
     measures: List[str]
     metadata: Optional[Dict[str, Any]] = None
@@ -86,7 +86,7 @@ class DataCubeResponse(DataCubeBase):
     
     class Config:
         allow_population_by_field_name = True
-        from_attributes = True
+        orm_mode = True
         schema_extra = {
             "example": {
                 "id": "cube-123",
