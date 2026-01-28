@@ -36,7 +36,7 @@ class DataSourceResponse(DataSourceBase):
     last_sync: Optional[datetime] = None
     
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 # Table Schemas
 class ColumnSchema(BaseModel):
@@ -70,7 +70,9 @@ class DataCubeBase(BaseModel):
     measures: List[str]
     metadata: Optional[Dict[str, Any]] = None
     
-    model_config = {"populate_by_name": True}  # Allow both field name and alias in Pydantic v2
+    class Config:
+        # Allow both field name and alias in Pydantic v1
+        allow_population_by_field_name = True
 
 class DataCubeCreate(DataCubeBase):
     pass
@@ -82,10 +84,10 @@ class DataCubeResponse(DataCubeBase):
     id: str
     createdAt: str
     
-    model_config = {
-        "populate_by_name": True, 
-        "from_attributes": True,
-        "json_schema_extra": {
+    class Config:
+        allow_population_by_field_name = True
+        from_attributes = True
+        schema_extra = {
             "example": {
                 "id": "cube-123",
                 "name": "Sales Cube",
@@ -98,7 +100,6 @@ class DataCubeResponse(DataCubeBase):
                 "createdAt": "2026-01-27T00:00:00"
             }
         }
-    }
 
 class DataCubeQuery(BaseModel):
     query: str
@@ -153,7 +154,7 @@ class DashboardResponse(DashboardBase):
     updatedAt: str
     
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 # Data Entitlement Schemas
 class DataEntitlementBase(BaseModel):
@@ -188,7 +189,7 @@ class AppConfigResponse(AppConfigBase):
     updated_at: datetime
     
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 # Data Marketplace Response
 class DataMarketplaceResponse(BaseModel):
