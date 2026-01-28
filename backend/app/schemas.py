@@ -35,8 +35,7 @@ class DataSourceResponse(DataSourceBase):
     status: DataSourceStatus
     last_sync: Optional[datetime] = None
     
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 # Table Schemas
 class ColumnSchema(BaseModel):
@@ -48,17 +47,13 @@ class ColumnSchema(BaseModel):
 
 class TableSchema(BaseModel):
     name: str
-    # `schema` is a reserved attribute name in Pydantic v1 BaseModel,
-    # so we store it under `schema_name` and expose it via the alias "schema".
+    # In Pydantic v2, we can use `schema` directly, but keeping alias for API compatibility
     schema_name: Optional[str] = Field(None, alias="schema")
     columns: List[ColumnSchema]
     row_count: int
     description: Optional[str] = None
 
-    class Config:
-        # Allow populating the model using either the field name (`schema_name`)
-        # or the alias (`schema`).
-        allow_population_by_field_name = True
+    model_config = {"populate_by_name": True}
 
 # DataCube Schemas
 class DataCubeBase(BaseModel):
@@ -70,9 +65,7 @@ class DataCubeBase(BaseModel):
     measures: List[str]
     metadata: Optional[Dict[str, Any]] = None
     
-    class Config:
-        # Allow both field name and alias in Pydantic v1
-        allow_population_by_field_name = True
+    model_config = {"populate_by_name": True}
 
 class DataCubeCreate(DataCubeBase):
     pass
@@ -84,10 +77,10 @@ class DataCubeResponse(DataCubeBase):
     id: str
     createdAt: str
     
-    class Config:
-        allow_population_by_field_name = True
-        orm_mode = True
-        schema_extra = {
+    model_config = {
+        "populate_by_name": True,
+        "from_attributes": True,
+        "json_schema_extra": {
             "example": {
                 "id": "cube-123",
                 "name": "Sales Cube",
@@ -100,6 +93,7 @@ class DataCubeResponse(DataCubeBase):
                 "createdAt": "2026-01-27T00:00:00"
             }
         }
+    }
 
 class DataCubeQuery(BaseModel):
     query: str
@@ -153,8 +147,7 @@ class DashboardResponse(DashboardBase):
     createdAt: str
     updatedAt: str
     
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 # Data Entitlement Schemas
 class DataEntitlementBase(BaseModel):
@@ -188,8 +181,7 @@ class AppConfigResponse(AppConfigBase):
     created_at: datetime
     updated_at: datetime
     
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 # Data Marketplace Response
 class DataMarketplaceResponse(BaseModel):

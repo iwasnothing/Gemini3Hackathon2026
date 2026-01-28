@@ -275,7 +275,7 @@ def get_data_source_schema(
             columns=columns,
             row_count=table.row_count,
             description=table.description
-        ).dict())
+        ).model_dump())
 
     return {"tables": tables_list}
 
@@ -290,7 +290,7 @@ def update_data_source(
     if not db_source:
         raise HTTPException(status_code=404, detail="Data source not found")
     
-    update_data = data_source.dict(exclude_unset=True)
+    update_data = data_source.model_dump(exclude_unset=True)
     if "password" in update_data and update_data["password"]:
         db_source.password = update_data["password"]
     

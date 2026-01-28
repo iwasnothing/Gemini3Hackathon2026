@@ -53,7 +53,7 @@ def create_dashboard(
     
     dashboard_id = f"dashboard-{uuid.uuid4().hex[:12]}"
     
-    widgets_list = [widget.dict() for widget in dashboard.widgets]
+    widgets_list = [widget.model_dump() for widget in dashboard.widgets]
     
     db_dashboard = Dashboard(
         id=dashboard_id,
@@ -108,7 +108,7 @@ def update_dashboard(
     if not db_dashboard:
         raise HTTPException(status_code=404, detail="Dashboard not found")
     
-    widgets_list = [widget.dict() for widget in dashboard.widgets]
+    widgets_list = [widget.model_dump() for widget in dashboard.widgets]
     
     db_dashboard.name = dashboard.name
     db_dashboard.description = dashboard.description
