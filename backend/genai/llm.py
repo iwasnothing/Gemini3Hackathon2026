@@ -8,18 +8,13 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Try to import Vertex AI first (for GCP deployments), fall back to Gemini API
-try:
-    from langchain_google_vertexai import ChatVertexAI
-    VERTEX_AI_AVAILABLE = True
-except ImportError:
-    VERTEX_AI_AVAILABLE = False
-
+# Import Gemini/Vertex AI (langchain_google_genai supports both via configuration)
 try:
     from langchain_google_genai import ChatGoogleGenerativeAI
     GEMINI_API_AVAILABLE = True
 except ImportError:
     GEMINI_API_AVAILABLE = False
+    ChatGoogleGenerativeAI = None
 
 def get_llm(model_name: str = None, temperature: float = 0.0):
     """
@@ -45,20 +40,26 @@ def get_llm(model_name: str = None, temperature: float = 0.0):
     if model_name is None:
         model_name = os.getenv("GEMINI_MODEL_NAME", "gemini-2.5-flash-lite")
     
+    if not GEMINI_API_AVAILABLE:
+        raise ValueError(
+            "langchain-google-genai is not installed. "
+            "Please install it with: pip install langchain-google-genai"
+        )
+    
     logger.info(f"Initializing LLM with model: {model_name}")
-    logger.info(f"Vertex AI available: {VERTEX_AI_AVAILABLE}, Gemini API available: {GEMINI_API_AVAILABLE}")
     
     # Check if we should use Vertex AI (preferred for GCP)
     use_vertex_ai = os.getenv("USE_VERTEX_AI", "true").lower() == "true"
     use_vertex_ai_via_api = os.getenv("GOOGLE_GENAI_USE_VERTEXAI", "false").lower() == "true"
     logger.info(f"USE_VERTEX_AI: {use_vertex_ai}, GOOGLE_GENAI_USE_VERTEXAI: {use_vertex_ai_via_api}")
     
-    # Check for Vertex AI API key
+    # Check for API keys
     google_api_key = os.getenv("GOOGLE_API_KEY")
+    gemini_api_key = os.getenv("GEMINI_API_KEY")
     
-    # Priority 1: Try Vertex AI with service account credentials (most reliable)
-    if use_vertex_ai and VERTEX_AI_AVAILABLE:
-        # Use Vertex AI with Application Default Credentials
+    # Priority 1: Try Vertex AI with service account credentials (most reliable for GCP)
+    if use_vertex_ai:
+        # Use Vertex AI via langchain_google_genai with Application Default Credentials
         # This works with GOOGLE_APPLICATION_CREDENTIALS or default credentials
         try:
             # Get project ID from environment or credentials
@@ -73,11 +74,15 @@ def get_llm(model_name: str = None, temperature: float = 0.0):
             
             logger.info(f"Initializing Vertex AI with service account credentials, model: {model_name}, project: {project_id}, location: {location}")
             
-            llm = ChatVertexAI(
-                model_name=model_name,
+            # Configure langchain_google_genai to use Vertex AI
+            os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "true"
+            os.environ["GOOGLE_CLOUD_PROJECT"] = project_id
+            os.environ["GOOGLE_CLOUD_LOCATION"] = location
+            
+            # Use ChatGoogleGenerativeAI with Vertex AI routing (no API key needed with service account)
+            llm = ChatGoogleGenerativeAI(
+                model=model_name,
                 temperature=temperature,
-                project=project_id,
-                location=location,
             )
             logger.info("Vertex AI LLM initialized successfully with service account")
             return llm
@@ -87,8 +92,6 @@ def get_llm(model_name: str = None, temperature: float = 0.0):
     
     # Priority 2: Try Vertex AI via API key (may have permission issues)
     if use_vertex_ai_via_api and google_api_key:
-        # Use Vertex AI via API key (using langchain_google_genai with Vertex routing)
-        if not GEMINI_API_AVAILABLE:
             raise ValueError(
                 "GOOGLE_GENAI_USE_VERTEXAI is set to true, but langchain-google-genai is not installed. "
                 "Please install it with: pip install langchain-google-genai"
@@ -160,7 +163,7 @@ def get_llm(model_name: str = None, temperature: float = 0.0):
             ) from e
     
     raise ValueError(
-        "No LLM backend available. Please install langchain-google-vertexai or langchain-google-genai."
+        "No LLM backend available. Please install langchain-google-genai."
     )
 
 def get_llm_with_structured_output(

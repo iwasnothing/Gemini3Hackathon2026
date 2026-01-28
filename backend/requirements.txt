@@ -11,6 +11,7 @@ pydantic-settings==2.1.0
 google-cloud-bigquery==3.13.0
 psycopg2-binary==2.9.9
 cloud-sql-python-connector[pymysql]
+# langchain-google-vertexai is deprecated and has Pydantic v2 compatibility issues
+# Use langchain-google-genai instead, which supports Vertex AI via GOOGLE_GENAI_USE_VERTEXAI env var
 langchain-google-genai>=1.0.0
-langchain-google-vertexai>=1.0.0
 langchain-core>=0.1.0
