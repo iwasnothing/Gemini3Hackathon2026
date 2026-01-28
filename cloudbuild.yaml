@@ -23,9 +23,9 @@ steps:
       - 'managed'
       - '--allow-unauthenticated'
       - '--set-env-vars'
-      - 'ENV=GCP,DB_HOST=35.239.204.217,DB_PORT=3306,DB_USER=sysdba,DB_NAME=securebi,INSTANCE_CONNECTION_NAME=smart-inn-484713-c1:us-central1:free-trial-first-project'
+      - 'ENV=GCP,DB_HOST=35.239.204.217,DB_PORT=3306,DB_USER=sysdba,DB_NAME=securebi,INSTANCE_CONNECTION_NAME=smart-inn-484713-c1:us-central1:free-trial-first-project,USE_VERTEX_AI=true,GOOGLE_GENAI_USE_VERTEXAI=true,GOOGLE_CLOUD_PROJECT=smart-inn-484713-c1,GOOGLE_CLOUD_LOCATION=us-central1,GEMINI_MODEL_NAME=gemini-2.5-flash-lite'
       - '--set-secrets'
-      - 'DB_PASSWORD=projects/323205042509/secrets/mysql_password:latest'
+      - 'DB_PASSWORD=projects/323205042509/secrets/mysql_password:latest,API_KEY=projects/323205042509/secrets/API_KEY:latest,GOOGLE_API_KEY=projects/323205042509/secrets/API_KEY:latest'
 
   # Step 4: Get backend service URL
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'

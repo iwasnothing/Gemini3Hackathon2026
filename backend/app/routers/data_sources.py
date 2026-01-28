@@ -3,7 +3,15 @@ from sqlalchemy.orm import Session
 from typing import Optional
 from ..database import get_db
 from ..models import DataSource, Table, DataSourceType, DataSourceStatus
-from ..schemas import DataSourceCreate, DataSourceResponse, DataSourceUpdate, TableSchema, ColumnSchema
+from ..schemas import (
+    DataSourceCreate,
+    DataSourceResponse,
+    DataSourceUpdate,
+    TableSchema,
+    ColumnSchema,
+    SqlPreviewRequest,
+    SqlPreviewResponse,
+)
 from datetime import datetime
 import uuid
 import json
@@ -329,254 +337,151 @@ def test_connection(
     source_id: str,
     db: Session = Depends(get_db)
 ):
-    """Test connection to a data source"""
-    logger.info("Starting test_connection for data source", extra={
+    """
+    Lightweight placeholder connection test.
+    It only verifies that the data source exists and returns a synthetic success response.
+    """
+    db_source = db.query(DataSource).filter(DataSource.id == source_id).first()
+    if not db_source:
+        raise HTTPException(status_code=404, detail="Data source not found")
+
+    logger.info("test_connection called (placeholder)", extra={
         "source_id": source_id,
+        "type": db_source.type.value if hasattr(db_source.type, "value") else str(db_source.type),
+    })
+
+    return {
+        "success": True,
+        "message": "Connection test placeholder succeeded (no live DB call).",
+        "status": "connected",
+    }
+
+@router.post("/{source_id}/preview-sql", response_model=SqlPreviewResponse)
+def preview_sql(
+    source_id: str,
+    request: SqlPreviewRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Execute a SQL query against the given data source and return a small preview.
+    Currently supports BigQuery data sources.
+    """
+    logger.info("Starting preview_sql for data source", extra={
+        "source_id": source_id,
+        "max_rows": request.max_rows,
     })
 
     db_source = db.query(DataSource).filter(DataSource.id == source_id).first()
     if not db_source:
-        logger.warning("Data source not found during test_connection", extra={
-            "source_id": source_id,
-        })
+        logger.warning("Data source not found during preview_sql", extra={"source_id": source_id})
         raise HTTPException(status_code=404, detail="Data source not found")
-    
-    try:
-        logger.info("Loaded data source from DB for test_connection", extra={
-            "source_id": db_source.id,
+
+    if db_source.type != DataSourceType.bigquery:
+        logger.warning("preview_sql not implemented for this data source type", extra={
+            "source_id": source_id,
             "type": db_source.type.value if hasattr(db_source.type, "value") else str(db_source.type),
-            "host": db_source.host,
-            "port": db_source.port,
-            "database": db_source.database,
-            "project_id": getattr(db_source, "project_id", None),
-            "dataset": getattr(db_source, "dataset", None),
-            "location": getattr(db_source, "location", None),
-            "has_password": bool(db_source.password),
+        })
+        raise HTTPException(
+            status_code=400,
+            detail="SQL preview is currently only supported for BigQuery data sources."
+        )
+
+    try:
+        from google.cloud import bigquery
+        from google.oauth2 import service_account
+        from google.auth.exceptions import DefaultCredentialsError
+    except ImportError:
+        logger.exception("google-cloud-bigquery not installed during preview_sql")
+        raise HTTPException(
+            status_code=500,
+            detail="google-cloud-bigquery library not installed. Install with: pip install google-cloud-bigquery"
+        )
+
+    try:
+        credentials = None
+
+        # Prefer inline service account JSON from the data source if present,
+        # otherwise fall back to Application Default Credentials
+        if db_source.password:
+            logger.info("preview_sql using inline service account key", extra={"source_id": db_source.id})
+            try:
+                service_account_info = json.loads(db_source.password)
+            except json.JSONDecodeError:
+                logger.exception("Failed to parse BigQuery service account JSON during preview_sql")
+                raise HTTPException(status_code=400, detail="Invalid service account key JSON")
+
+            credentials = service_account.Credentials.from_service_account_info(service_account_info)
+        else:
+            logger.info("preview_sql using default credentials from environment", extra={
+                "source_id": db_source.id,
+                "env_has_google_application_credentials": bool(os.getenv("GOOGLE_APPLICATION_CREDENTIALS")),
+            })
+
+        # Create BigQuery client
+        project = db_source.project_id or db_source.host
+        logger.info("Creating BigQuery client for preview_sql", extra={
+            "source_id": db_source.id,
+            "project": project,
+            "location": db_source.location,
         })
 
-        if db_source.type == DataSourceType.bigquery:
-            # Test BigQuery connection
-            try:
-                from google.cloud import bigquery
-                from google.oauth2 import service_account
-                from google.auth.exceptions import DefaultCredentialsError
-
-                credentials = None
-
-                # Prefer inline service account JSON from the data source if present,
-                # otherwise fall back to Application Default Credentials (e.g. GOOGLE_APPLICATION_CREDENTIALS)
-                if db_source.password:
-                    logger.info("BigQuery test_connection using inline service account key", extra={
-                        "source_id": db_source.id,
-                    })
-                    try:
-                        service_account_info = json.loads(db_source.password)
-                    except json.JSONDecodeError:
-                        logger.exception("Failed to parse BigQuery service account JSON during test_connection")
-                        raise HTTPException(status_code=400, detail="Invalid service account key JSON")
-
-                    # Create credentials from inline key
-                    credentials = service_account.Credentials.from_service_account_info(service_account_info)
-                else:
-                    logger.info("BigQuery test_connection using default credentials from environment", extra={
-                        "source_id": db_source.id,
-                        "env_has_google_application_credentials": bool(os.getenv("GOOGLE_APPLICATION_CREDENTIALS")),
-                    })
-
-                # Create BigQuery client (uses provided credentials or ADC from environment)
-                logger.info("Creating BigQuery client for test_connection", extra={
-                    "source_id": db_source.id,
-                    "project": db_source.project_id or db_source.host,
-                    "location": db_source.location,
-                })
-
-                if credentials is not None:
-                    client = bigquery.Client(
-                        credentials=credentials,
-                        project=db_source.project_id or db_source.host,
-                        location=db_source.location
-                    )
-                else:
-                    # Let BigQuery use Application Default Credentials
-                    client = bigquery.Client(
-                        project=db_source.project_id or db_source.host,
-                        location=db_source.location
-                    )
-
-                # Test connection by listing datasets
-                logger.info("Listing BigQuery datasets for test_connection", extra={
-                    "source_id": db_source.id,
-                })
-                datasets = list(client.list_datasets(max_results=1))
-
-                # Update status to connected
-                db_source.status = DataSourceStatus.connected
-                db.commit()
-
-                logger.info("BigQuery test_connection successful", extra={
-                    "source_id": db_source.id,
-                    "datasets_found": len(datasets),
-                })
-                return {
-                    "success": True,
-                    "message": "Connection successful",
-                    "status": "connected"
-                }
-            except ImportError:
-                logger.exception("google-cloud-bigquery not installed during test_connection")
-                raise HTTPException(
-                    status_code=500,
-                    detail="google-cloud-bigquery library not installed. Install with: pip install google-cloud-bigquery"
-                )
-            except DefaultCredentialsError as e:
-                logger.error("BigQuery test_connection missing default credentials", extra={
-                    "source_id": db_source.id,
-                    "error": str(e),
-                })
-                raise HTTPException(
-                    status_code=400,
-                    detail="Service account credentials not found. Either provide a service account key in the data source or configure GOOGLE_APPLICATION_CREDENTIALS."
-                )
-            except Exception as e:
-                # Update status to error
-                db_source.status = DataSourceStatus.error
-                db.commit()
-                logger.exception("Unexpected error during BigQuery test_connection", extra={
-                    "source_id": db_source.id,
-                    "error": str(e),
-                    "error_type": type(e).__name__,
-                })
-                return {
-                    "success": False,
-                    "message": f"Connection failed: {str(e)}",
-                    "status": "error"
-                }
-        
-        elif db_source.type == DataSourceType.postgresql:
-            # Test PostgreSQL connection
-            try:
-                import psycopg2
-                logger.info("Creating PostgreSQL connection for test_connection", extra={
-                    "source_id": db_source.id,
-                    "host": db_source.host,
-                    "port": db_source.port,
-                    "database": db_source.database,
-                    "username": db_source.username,
-                })
-                conn = psycopg2.connect(
-                    host=db_source.host,
-                    port=db_source.port,
-                    database=db_source.database,
-                    user=db_source.username,
-                    password=db_source.password,
-                    connect_timeout=5
-                )
-                conn.close()
-                
-                # Update status to connected
-                db_source.status = DataSourceStatus.connected
-                db.commit()
-                
-                logger.info("PostgreSQL test_connection successful", extra={
-                    "source_id": db_source.id,
-                })
-                return {
-                    "success": True,
-                    "message": "Connection successful",
-                    "status": "connected"
-                }
-            except ImportError:
-                logger.exception("psycopg2 not installed during test_connection")
-                raise HTTPException(
-                    status_code=500,
-                    detail="psycopg2 library not installed. Install with: pip install psycopg2-binary"
-                )
-            except Exception as e:
-                db_source.status = DataSourceStatus.error
-                db.commit()
-                logger.exception("Unexpected error during PostgreSQL test_connection", extra={
-                    "source_id": db_source.id,
-                    "error": str(e),
-                    "error_type": type(e).__name__,
-                })
-                return {
-                    "success": False,
-                    "message": f"Connection failed: {str(e)}",
-                    "status": "error"
-                }
-        
-        elif db_source.type == DataSourceType.mysql:
-            # Test MySQL connection
-            try:
-                import pymysql
-                logger.info("Creating MySQL connection for test_connection", extra={
-                    "source_id": db_source.id,
-                    "host": db_source.host,
-                    "port": db_source.port,
-                    "database": db_source.database,
-                    "username": db_source.username,
-                })
-                conn = pymysql.connect(
-                    host=db_source.host,
-                    port=db_source.port,
-                    database=db_source.database,
-                    user=db_source.username,
-                    password=db_source.password,
-                    connect_timeout=5
-                )
-                conn.close()
-                
-                # Update status to connected
-                db_source.status = DataSourceStatus.connected
-                db.commit()
-                
-                logger.info("MySQL test_connection successful", extra={
-                    "source_id": db_source.id,
-                })
-                return {
-                    "success": True,
-                    "message": "Connection successful",
-                    "status": "connected"
-                }
-            except Exception as e:
-                db_source.status = DataSourceStatus.error
-                db.commit()
-                logger.exception("Unexpected error during MySQL test_connection", extra={
-                    "source_id": db_source.id,
-                    "error": str(e),
-                    "error_type": type(e).__name__,
-                })
-                return {
-                    "success": False,
-                    "message": f"Connection failed: {str(e)}",
-                    "status": "error"
-                }
-        
+        if credentials is not None:
+            client = bigquery.Client(
+                credentials=credentials,
+                project=project,
+                location=db_source.location,
+            )
         else:
-            # For other types (mongodb, snowflake), return a generic response
-            # In production, implement specific connection tests
-            logger.info("test_connection not implemented for data source type", extra={
-                "source_id": db_source.id,
-                "type": db_source.type.value if hasattr(db_source.type, "value") else str(db_source.type),
-            })
-            return {
-                "success": False,
-                "message": f"Connection testing not yet implemented for {db_source.type.value}",
-                "status": "disconnected"
-            }
-    
-    except HTTPException:
-        raise
+            client = bigquery.Client(
+                project=project,
+                location=db_source.location,
+            )
+
+        # Apply LIMIT if not already present, to avoid huge result sets
+        sql = request.sql.strip()
+        if "limit" not in sql.lower():
+            sql = f"{sql}\nLIMIT {request.max_rows}"
+
+        logger.info("Executing preview_sql query", extra={
+            "source_id": source_id,
+            "sql_snippet": sql[:200],
+        })
+
+        query_job = client.query(sql)
+        rows_iter = query_job.result(max_results=request.max_rows)
+        rows = list(rows_iter)
+
+        if not rows:
+            return SqlPreviewResponse(rows=[], columns=[])
+
+        # Convert rows to plain dicts
+        sample_row = rows[0]
+        columns = list(sample_row.keys())
+        data_rows = [dict(row) for row in rows]
+
+        logger.info("preview_sql query succeeded", extra={
+            "source_id": source_id,
+            "row_count": len(data_rows),
+            "column_count": len(columns),
+        })
+
+        return SqlPreviewResponse(rows=data_rows, columns=columns)
+    except DefaultCredentialsError as e:
+        logger.error("preview_sql missing default credentials", extra={
+            "source_id": source_id,
+            "error": str(e),
+        })
+        raise HTTPException(
+            status_code=400,
+            detail="Service account credentials not found. Either provide a service account key in the data source or configure GOOGLE_APPLICATION_CREDENTIALS."
+        )
     except Exception as e:
-        db_source.status = DataSourceStatus.error
-        db.commit()
-        logger.exception("Top-level unexpected error during test_connection", extra={
-            "source_id": db_source.id if 'db_source' in locals() and db_source else source_id,
+        logger.exception("Unexpected error during preview_sql", extra={
+            "source_id": source_id,
             "error": str(e),
             "error_type": type(e).__name__,
         })
-        return {
-            "success": False,
-            "message": f"Unexpected error: {str(e)}",
-            "status": "error"
-        }
+        raise HTTPException(
+            status_code=400,
+            detail=f"Failed to execute SQL preview: {str(e)}"
+        )

@@ -58,26 +58,66 @@ class DataCubeBase(BaseModel):
     name: str
     description: str
     query: str
-    data_source_id: str
+    data_source_id: str = Field(alias="dataSourceId")  # Accept camelCase from frontend, store as snake_case
     dimensions: List[str]
     measures: List[str]
     metadata: Optional[Dict[str, Any]] = None
+    
+    model_config = {"populate_by_name": True}  # Allow both field name and alias in Pydantic v2
 
 class DataCubeCreate(DataCubeBase):
+    pass
+
+class DataCubeUpdate(DataCubeBase):
     pass
 
 class DataCubeResponse(DataCubeBase):
     id: str
     createdAt: str
     
-    class Config:
-        from_attributes = True
+    model_config = {
+        "populate_by_name": True, 
+        "from_attributes": True,
+        "json_schema_extra": {
+            "example": {
+                "id": "cube-123",
+                "name": "Sales Cube",
+                "description": "Sales data",
+                "query": "SELECT * FROM sales",
+                "dataSourceId": "source-123",
+                "dimensions": ["region", "date"],
+                "measures": ["sales", "revenue"],
+                "metadata": {},
+                "createdAt": "2026-01-27T00:00:00"
+            }
+        }
+    }
 
 class DataCubeQuery(BaseModel):
     query: str
 
 class DataCubeQueryResponse(BaseModel):
     data: List[Dict[str, Any]]
+    columns: List[str]
+
+class DataCubeGenerateRequest(BaseModel):
+    user_request: str
+    data_source_id: str
+
+class DataCubeGenerateResponse(BaseModel):
+    name: str
+    description: str
+    query: str
+    dimensions: List[str]
+    measures: List[str]
+    metadata: Optional[Dict[str, Any]] = None
+
+class SqlPreviewRequest(BaseModel):
+    sql: str
+    max_rows: int = 5
+
+class SqlPreviewResponse(BaseModel):
+    rows: List[Dict[str, Any]]
     columns: List[str]
 
 # Dashboard Schemas
