@@ -4,8 +4,11 @@ sqlalchemy==2.0.23
 pymysql==1.1.0
 cryptography==41.0.7
 python-dotenv==1.0.0
-pydantic==2.5.0
-pydantic-settings==2.1.0
+# Use Pydantic v1.x because FastAPI 0.104.1 is built on Pydantic v1.
+# Pydantic v2 (and v2-style config like `model_config`) can cause runtime
+# errors such as `TypeError: issubclass() arg 1 must be a class` when used
+# with this FastAPI version.
+pydantic==1.10.13
 google-cloud-bigquery==3.13.0
 psycopg2-binary==2.9.9
 cloud-sql-python-connector[pymysql]
