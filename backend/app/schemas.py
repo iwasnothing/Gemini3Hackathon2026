@@ -48,10 +48,17 @@ class ColumnSchema(BaseModel):
 
 class TableSchema(BaseModel):
     name: str
-    schema: Optional[str] = None
+    # `schema` is a reserved attribute name in Pydantic v1 BaseModel,
+    # so we store it under `schema_name` and expose it via the alias "schema".
+    schema_name: Optional[str] = Field(None, alias="schema")
     columns: List[ColumnSchema]
     row_count: int
     description: Optional[str] = None
+
+    class Config:
+        # Allow populating the model using either the field name (`schema_name`)
+        # or the alias (`schema`).
+        allow_population_by_field_name = True
 
 # DataCube Schemas
 class DataCubeBase(BaseModel):

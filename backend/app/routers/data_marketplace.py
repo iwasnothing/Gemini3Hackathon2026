@@ -43,7 +43,7 @@ def get_marketplace(
                 columns=columns,
                 row_count=table.row_count,
                 description=table.description
-            ).dict())
+            ).dict(by_alias=True))
         
         source_dict = {
             "id": source.id,
