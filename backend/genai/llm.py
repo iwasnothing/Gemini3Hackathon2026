@@ -92,6 +92,7 @@ def get_llm(model_name: str = None, temperature: float = 0.0):
     
     # Priority 2: Try Vertex AI via API key (may have permission issues)
     if use_vertex_ai_via_api and google_api_key:
+        if not GEMINI_API_AVAILABLE:
             raise ValueError(
                 "GOOGLE_GENAI_USE_VERTEXAI is set to true, but langchain-google-genai is not installed. "
                 "Please install it with: pip install langchain-google-genai"
