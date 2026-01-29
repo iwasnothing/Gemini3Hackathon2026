@@ -1,195 +1,101 @@
 """
 LLM module for SecureBI backend.
-Provides LangChain integration with Google Gemini model via Vertex AI.
+Uses the Google Vertex AI SDK (google-genai) for Gemini models—no LangChain.
 """
 import os
+import logging
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
 
-# Import Gemini/Vertex AI (langchain_google_genai supports both via configuration)
-try:
-    from langchain_google_genai import ChatGoogleGenerativeAI
-    GEMINI_API_AVAILABLE = True
-except ImportError:
-    GEMINI_API_AVAILABLE = False
-    ChatGoogleGenerativeAI = None
+logger = logging.getLogger(__name__)
 
-def get_llm(model_name: str = None, temperature: float = 0.0):
+# Google Gen AI client for Vertex AI (lazy init)
+_vertex_client = None
+
+
+def _ensure_vertex_env():
+    """Set env vars required for Vertex AI if not already set."""
+    if os.getenv("GOOGLE_GENAI_USE_VERTEXAI", "").lower() not in ("true", "1", "yes"):
+        os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "true"
+    if not os.getenv("GOOGLE_CLOUD_PROJECT") and os.getenv("GCP_PROJECT"):
+        os.environ["GOOGLE_CLOUD_PROJECT"] = os.environ["GCP_PROJECT"]
+    if not os.getenv("GOOGLE_CLOUD_LOCATION"):
+        os.environ["GOOGLE_CLOUD_LOCATION"] = "us-central1"
+
+
+def get_vertex_client():
     """
-    Initialize and return a LangChain LLM instance.
-    Uses Vertex AI if available (for GCP), otherwise falls back to Gemini API.
-    
-    Args:
-        model_name: The Gemini model to use. If None, reads from GEMINI_MODEL_NAME env variable.
-                   Defaults to "gemini-2.5-flash-lite" if not set.
-                   For Vertex AI, use models like "gemini-1.5-flash" or "gemini-2.5-flash-lite"
-        temperature: Temperature for the model (default: 0.0 for deterministic output)
-    
-    Returns:
-        LLM instance (ChatVertexAI or ChatGoogleGenerativeAI)
-    
-    Raises:
-        ValueError: If no valid authentication method is available
+    Return a configured Google Gen AI client for Vertex AI.
+    Uses GOOGLE_APPLICATION_CREDENTIALS (service account) or ADC.
     """
-    import logging
-    logger = logging.getLogger(__name__)
-    
-    # Get model name from environment variable if not provided
-    if model_name is None:
-        model_name = os.getenv("GEMINI_MODEL_NAME", "gemini-2.5-flash-lite")
-    
-    if not GEMINI_API_AVAILABLE:
+    global _vertex_client
+    if _vertex_client is not None:
+        return _vertex_client
+    _ensure_vertex_env()
+    project = os.getenv("GOOGLE_CLOUD_PROJECT") or os.getenv("GCP_PROJECT")
+    if not project:
         raise ValueError(
-            "langchain-google-genai is not installed. "
-            "Please install it with: pip install langchain-google-genai"
+            "GOOGLE_CLOUD_PROJECT or GCP_PROJECT must be set for Vertex AI."
         )
-    
-    logger.info(f"Initializing LLM with model: {model_name}")
-    
-    # Check if we should use Vertex AI (preferred for GCP)
-    use_vertex_ai = os.getenv("USE_VERTEX_AI", "true").lower() == "true"
-    use_vertex_ai_via_api = os.getenv("GOOGLE_GENAI_USE_VERTEXAI", "false").lower() == "true"
-    logger.info(f"USE_VERTEX_AI: {use_vertex_ai}, GOOGLE_GENAI_USE_VERTEXAI: {use_vertex_ai_via_api}")
-    
-    # Check for API keys
-    google_api_key = os.getenv("GOOGLE_API_KEY")
-    gemini_api_key = os.getenv("GEMINI_API_KEY")
-    
-    # Priority 1: Try Vertex AI with service account credentials (most reliable for GCP)
-    if use_vertex_ai:
-        # Use Vertex AI via langchain_google_genai with Application Default Credentials
-        # This works with GOOGLE_APPLICATION_CREDENTIALS or default credentials
-        try:
-            # Get project ID from environment or credentials
-            project_id = os.getenv("GOOGLE_CLOUD_PROJECT") or os.getenv("GCP_PROJECT")
-            location = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
-            
-            if not project_id:
-                raise ValueError(
-                    "GOOGLE_CLOUD_PROJECT or GCP_PROJECT environment variable is not set. "
-                    "Required for Vertex AI."
-                )
-            
-            logger.info(f"Initializing Vertex AI with service account credentials, model: {model_name}, project: {project_id}, location: {location}")
-            
-            # Configure langchain_google_genai to use Vertex AI
-            os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "true"
-            os.environ["GOOGLE_CLOUD_PROJECT"] = project_id
-            os.environ["GOOGLE_CLOUD_LOCATION"] = location
-            
-            # Use ChatGoogleGenerativeAI with Vertex AI routing (no API key needed with service account)
-            llm = ChatGoogleGenerativeAI(
-                model=model_name,
-                temperature=temperature,
-            )
-            logger.info("Vertex AI LLM initialized successfully with service account")
-            return llm
-        except Exception as e:
-            logger.warning(f"Failed to initialize Vertex AI with service account: {str(e)}. Will try API key method if available.")
-            # Continue to try API key method below
-    
-    # Priority 2: Try Vertex AI via API key (may have permission issues)
-    if use_vertex_ai_via_api and google_api_key:
-        if not GEMINI_API_AVAILABLE:
-            raise ValueError(
-                "GOOGLE_GENAI_USE_VERTEXAI is set to true, but langchain-google-genai is not installed. "
-                "Please install it with: pip install langchain-google-genai"
-            )
-        
-        try:
-            project_id = os.getenv("GOOGLE_CLOUD_PROJECT") or os.getenv("GCP_PROJECT")
-            location = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
-            
-            if not project_id:
-                raise ValueError(
-                    "GOOGLE_CLOUD_PROJECT or GCP_PROJECT environment variable is not set. "
-                    "Required for Vertex AI."
-                )
-            
-            logger.info(f"Initializing Vertex AI via API key with model: {model_name}, project: {project_id}, location: {location}")
-            
-            # Use ChatGoogleGenerativeAI with Vertex AI routing
-            # Set environment variables that langchain_google_genai will use
-            os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "true"
-            os.environ["GOOGLE_CLOUD_PROJECT"] = project_id
-            os.environ["GOOGLE_CLOUD_LOCATION"] = location
-            
-            llm = ChatGoogleGenerativeAI(
-                model=model_name,
-                google_api_key=google_api_key,
-                temperature=temperature,
-            )
-            logger.info("Vertex AI LLM (via API key) initialized successfully")
-            return llm
-        except Exception as e:
-            logger.error(f"Failed to initialize Vertex AI LLM via API key: {str(e)}", exc_info=True)
-            # If API key method fails due to permissions, provide helpful error
-            error_msg = str(e)
-            if "PERMISSION_DENIED" in error_msg or "403" in error_msg:
-                raise ValueError(
-                    f"Vertex AI API key permission denied: {str(e)}. "
-                    "API keys for Vertex AI require IAM permissions. "
-                    "Please either:\n"
-                    "1. Grant the 'Vertex AI User' role to the service account associated with your API key, OR\n"
-                    "2. Use service account credentials (GOOGLE_APPLICATION_CREDENTIALS) instead, OR\n"
-                    "3. Try using a different model like 'gemini-1.5-flash' or 'gemini-1.5-pro'"
-                ) from e
-            raise ValueError(
-                f"Failed to initialize Vertex AI LLM via API key: {str(e)}. "
-                "Please verify your GOOGLE_API_KEY is valid and has Vertex AI permissions."
-            ) from e
-    
-    # Fall back to Gemini API (for local development with API keys)
-    if GEMINI_API_AVAILABLE:
-        api_key = os.getenv("GEMINI_API_KEY")
-        
-        if not api_key:
-            raise ValueError(
-                "GEMINI_API_KEY environment variable is not set. "
-                "Please set it in your .env file or environment, or use Vertex AI with GOOGLE_APPLICATION_CREDENTIALS."
-            )
-        
-        try:
-            return ChatGoogleGenerativeAI(
-                model=model_name,
-                google_api_key=api_key,
-                temperature=temperature,
-            )
-        except Exception as e:
-            raise ValueError(
-                f"Failed to initialize Gemini API LLM: {str(e)}. "
-                "Please verify your GEMINI_API_KEY is valid."
-            ) from e
-    
-    raise ValueError(
-        "No LLM backend available. Please install langchain-google-genai."
+    try:
+        from google import genai
+        from google.genai.types import HttpOptions
+    except ImportError as e:
+        raise ValueError(
+            "Google Gen AI SDK is not installed. Install with: pip install google-genai"
+        ) from e
+    location = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
+    client = genai.Client(
+        vertexai=True,
+        project=project,
+        location=location,
+        http_options=HttpOptions(api_version="v1"),
     )
+    _vertex_client = client
+    logger.info(
+        "Vertex AI client initialized (google-genai), project=%s",
+        project,
+    )
+    return _vertex_client
 
-def get_llm_with_structured_output(
-    model_name: str = None,
+
+def generate_content(
+    prompt: str,
+    model: str = None,
     temperature: float = 0.0,
-    response_format: dict = None
-):
+) -> str:
     """
-    Initialize and return a LangChain LLM instance configured for structured output.
-    
+    Generate text from Vertex AI Gemini model.
+
     Args:
-        model_name: The Gemini model to use. If None, reads from GEMINI_MODEL_NAME env variable.
-                   Defaults to "gemini-2.5-flash-lite" if not set.
-        temperature: Temperature for the model (default: 0.0 for deterministic output)
-        response_format: Optional response format specification for structured output
-    
+        prompt: The full prompt (e.g. system + user message combined).
+        model: Model name; defaults to GEMINI_MODEL_NAME or gemini-2.5-flash-lite.
+        temperature: Sampling temperature (0.0 = deterministic).
+
     Returns:
-        LLM instance configured for structured output
+        Response text from the model.
     """
-    llm = get_llm(model_name=model_name, temperature=temperature)
-    
-    # Configure for structured output if response_format is provided
-    if response_format:
-        # Note: Gemini models support structured output through response_format parameter
-        # This may need to be adjusted based on the specific LangChain version
-        pass
-    
-    return llm
+    if model is None:
+        model = os.getenv("GEMINI_MODEL_NAME", "gemini-2.5-flash-lite")
+    client = get_vertex_client()
+    try:
+        from google.genai.types import GenerateContentConfig
+        config = GenerateContentConfig(temperature=temperature)
+    except ImportError:
+        config = None
+    response = client.models.generate_content(
+        model=model,
+        contents=prompt,
+        config=config,
+    )
+    if hasattr(response, "text") and response.text:
+        return response.text
+    # Fallback: extract text from candidates
+    if getattr(response, "candidates", None):
+        for c in response.candidates:
+            if getattr(c, "content", None) and getattr(c.content, "parts", None):
+                for p in c.content.parts:
+                    if getattr(p, "text", None):
+                        return p.text
+    raise ValueError("Vertex AI returned no text in response.")

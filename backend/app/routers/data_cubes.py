@@ -6,7 +6,8 @@ from ..database import get_db
 from ..models import DataCube, DataSource, Table, DataSourceType
 from ..schemas import (
     DataCubeCreate, DataCubeUpdate, DataCubeResponse, DataCubeQuery, DataCubeQueryResponse,
-    DataCubeGenerateRequest, DataCubeGenerateResponse, TableSchema, ColumnSchema
+    DataCubeGenerateRequest, DataCubeGenerateResponse, TableSchema, ColumnSchema,
+    DataCubePreviewRequest, SqlPreviewResponse,
 )
 from datetime import datetime
 import uuid
@@ -251,6 +252,85 @@ def delete_data_cube(
         db.rollback()
         logger.exception("Failed to delete data cube", extra={"cube_id": cube_id, "error": str(e)})
         raise HTTPException(status_code=500, detail=f"Failed to delete data cube: {str(e)}")
+
+
+@router.post("/{cube_id}/preview", response_model=SqlPreviewResponse)
+def preview_data_cube(
+    cube_id: str,
+    request: DataCubePreviewRequest,
+    db: Session = Depends(get_db),
+):
+    """Execute the data cube's SQL against its data source and return a paginated result set."""
+    db_cube = db.query(DataCube).filter(DataCube.id == cube_id).first()
+    if not db_cube:
+        raise HTTPException(status_code=404, detail="Data cube not found")
+
+    db_source = db.query(DataSource).filter(DataSource.id == db_cube.data_source_id).first()
+    if not db_source:
+        raise HTTPException(status_code=404, detail="Data source not found for this cube")
+
+    if db_source.type != DataSourceType.bigquery:
+        raise HTTPException(
+            status_code=400,
+            detail="Cube preview is currently only supported for BigQuery data sources.",
+        )
+
+    try:
+        from google.cloud import bigquery
+        from google.oauth2 import service_account
+        from google.auth.exceptions import DefaultCredentialsError
+    except ImportError:
+        raise HTTPException(
+            status_code=500,
+            detail="google-cloud-bigquery library not installed.",
+        )
+
+    limit = max(1, min(request.limit, 500))
+    offset = max(0, request.offset)
+
+    # Wrap cube query in subquery so we can apply LIMIT/OFFSET for pagination
+    inner_sql = db_cube.query.strip()
+    if inner_sql.rstrip().endswith(";"):
+        inner_sql = inner_sql.rstrip()[:-1]
+    sql = f"SELECT * FROM (\n{inner_sql}\n) AS _preview\nLIMIT {limit} OFFSET {offset}"
+
+    try:
+        credentials = None
+        if db_source.password:
+            try:
+                service_account_info = json.loads(db_source.password)
+                credentials = service_account.Credentials.from_service_account_info(service_account_info)
+            except json.JSONDecodeError:
+                raise HTTPException(status_code=400, detail="Invalid service account key JSON")
+        project = db_source.project_id or db_source.host
+        if credentials:
+            client = bigquery.Client(
+                credentials=credentials,
+                project=project,
+                location=db_source.location,
+            )
+        else:
+            client = bigquery.Client(project=project, location=db_source.location)
+
+        query_job = client.query(sql)
+        rows_iter = query_job.result(max_results=limit)
+        rows = list(rows_iter)
+
+        if not rows:
+            return SqlPreviewResponse(rows=[], columns=[])
+
+        columns = list(rows[0].keys())
+        data_rows = [dict(row) for row in rows]
+        return SqlPreviewResponse(rows=data_rows, columns=columns)
+    except DefaultCredentialsError:
+        raise HTTPException(
+            status_code=400,
+            detail="Service account credentials not found. Configure GOOGLE_APPLICATION_CREDENTIALS or add a key to the data source.",
+        )
+    except Exception as e:
+        logger.exception("preview_data_cube failed", extra={"cube_id": cube_id, "error": str(e)})
+        raise HTTPException(status_code=400, detail=f"Failed to execute cube preview: {str(e)}")
+
 
 @router.post("/generate", response_model=DataCubeGenerateResponse)
 def generate_data_cube_ai(

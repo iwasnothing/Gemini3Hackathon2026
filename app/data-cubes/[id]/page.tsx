@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Layout from '@/components/Layout';
 import { DataCube } from '@/lib/types';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Play, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const PAGE_SIZE = 20;
 
 export default function DataCubeDetailPage() {
   const params = useParams();
@@ -12,10 +14,12 @@ export default function DataCubeDetailPage() {
   const cubeId = params.id as string;
   const [cube, setCube] = useState<DataCube | null>(null);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchDataCube();
-  }, [cubeId]);
+  const [previewRows, setPreviewRows] = useState<Record<string, unknown>[]>([]);
+  const [previewColumns, setPreviewColumns] = useState<string[]>([]);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const [previewPage, setPreviewPage] = useState(0);
+  const [previewHasMore, setPreviewHasMore] = useState(false);
 
   const fetchDataCube = async () => {
     try {
@@ -29,6 +33,49 @@ export default function DataCubeDetailPage() {
       setLoading(false);
     }
   };
+
+  const runPreview = useCallback(async (page: number = 0) => {
+    if (!cubeId) return;
+    setPreviewLoading(true);
+    setPreviewError(null);
+    try {
+      const res = await fetch(`/api/data-cubes/${cubeId}/preview`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          limit: PAGE_SIZE,
+          offset: page * PAGE_SIZE,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setPreviewError(data.detail || data.error || 'Failed to run preview');
+        setPreviewRows([]);
+        setPreviewColumns([]);
+        return;
+      }
+      setPreviewRows(data.rows ?? []);
+      setPreviewColumns(data.columns ?? []);
+      setPreviewPage(page);
+      setPreviewHasMore((data.rows?.length ?? 0) === PAGE_SIZE);
+    } catch (err) {
+      setPreviewError('Failed to connect to backend');
+      setPreviewRows([]);
+      setPreviewColumns([]);
+    } finally {
+      setPreviewLoading(false);
+    }
+  }, [cubeId]);
+
+  useEffect(() => {
+    fetchDataCube();
+  }, [cubeId]);
+
+  useEffect(() => {
+    if (!loading && cube) {
+      runPreview(0);
+    }
+  }, [loading, cube?.id, runPreview]);
 
   if (loading) {
     return (
@@ -70,6 +117,15 @@ export default function DataCubeDetailPage() {
                 {cube.query}
               </code>
             </div>
+            <button
+              type="button"
+              onClick={() => runPreview(0)}
+              disabled={previewLoading}
+              className="mt-4 flex items-center gap-2 px-4 py-2 bg-soft-mint/20 text-soft-mint rounded-lg border border-soft-mint/30 hover:bg-soft-mint/30 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Play className="w-4 h-4" />
+              {previewLoading ? 'Loading…' : 'Run preview'}
+            </button>
           </div>
 
           <div className="glass rounded-xl p-6">
@@ -123,40 +179,81 @@ export default function DataCubeDetailPage() {
           </div>
         </div>
 
-        {cube.data && cube.data.length > 0 && (
-          <div className="mt-6 glass rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-soft-mint mb-4">
-              Sample Data
-            </h2>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-white/10">
-                <thead className="glass-strong">
-                  <tr>
-                    {Object.keys(cube.data[0]).map((key) => (
-                      <th
-                        key={key}
-                        className="px-4 py-3 text-left text-xs font-medium text-white uppercase"
-                      >
-                        {key}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/10">
-                  {cube.data.slice(0, 10).map((row: any, idx: number) => (
-                    <tr key={idx}>
-                      {Object.values(row).map((val: any, i: number) => (
-                        <td key={i} className="px-4 py-3 text-sm text-cream">
-                          {val}
-                        </td>
+        <div className="mt-6 glass rounded-xl p-6">
+          <h2 className="text-xl font-semibold text-soft-mint mb-4">
+            Preview
+          </h2>
+          {previewError && (
+            <p className="text-red-400 text-sm mb-4">{previewError}</p>
+          )}
+          {previewColumns.length > 0 ? (
+            <>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-white/10">
+                  <thead className="glass-strong">
+                    <tr>
+                      {previewColumns.map((col) => (
+                        <th
+                          key={col}
+                          className="px-4 py-3 text-left text-xs font-medium text-white uppercase"
+                        >
+                          {col}
+                        </th>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+                  </thead>
+                  <tbody className="divide-y divide-white/10">
+                    {previewRows.map((row, idx) => (
+                      <tr key={idx}>
+                        {previewColumns.map((col) => (
+                          <td key={col} className="px-4 py-3 text-sm text-cream">
+                            {row[col] != null ? String(row[col]) : '—'}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="mt-4 flex items-center justify-between text-sm text-cream">
+                <span>
+                  Page {previewPage + 1}
+                  {previewRows.length > 0 && (
+                    <span className="ml-2">
+                      (rows {(previewPage * PAGE_SIZE) + 1}–{(previewPage * PAGE_SIZE) + previewRows.length})
+                    </span>
+                  )}
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => runPreview(previewPage - 1)}
+                    disabled={previewLoading || previewPage === 0}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded border border-white/20 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Previous
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => runPreview(previewPage + 1)}
+                    disabled={previewLoading || !previewHasMore}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded border border-white/20 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Next
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </>
+          ) : (
+            !previewLoading && (
+              <p className="text-cream/80 text-sm">
+                Click &quot;Run preview&quot; to execute the query and show results.
+              </p>
+            )
+          )}
+        </div>
       </div>
     </Layout>
   );

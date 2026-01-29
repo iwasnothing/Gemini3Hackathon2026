@@ -122,6 +122,10 @@ class SqlPreviewResponse(BaseModel):
     rows: List[Dict[str, Any]]
     columns: List[str]
 
+class DataCubePreviewRequest(BaseModel):
+    limit: int = 20
+    offset: int = 0
+
 # Dashboard Schemas
 class WidgetSchema(BaseModel):
     id: str
